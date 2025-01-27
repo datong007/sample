@@ -1,0 +1,210 @@
+.container {
+  padding: 0 2rem;
+}
+
+.main {
+  min-height: 100vh;
+  padding: 4rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+.empty {
+  text-align: center;
+  margin: 2rem 0;
+  color: #666;
+}
+
+.cartItems {
+  width: 100%;
+  max-width: 800px;
+}
+
+.cartItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.itemInfo {
+  flex: 1;
+}
+
+.itemInfo h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.25rem;
+}
+
+.itemActions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #f5f5f5;
+  padding: 0.5rem;
+  border-radius: 5px;
+}
+
+.quantity span {
+  min-width: 2rem;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+}
+
+.quantityButton {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: white;
+  color: #0070f3;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantityButton:hover {
+  background: #0070f3;
+  color: white;
+}
+
+.removeButton {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ff0000;
+  background: white;
+  color: #ff0000;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.removeButton:hover {
+  background: #ff0000;
+  color: white;
+}
+
+.summary {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.checkoutButton {
+  padding: 1rem 2rem;
+  background: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.checkoutButton:hover {
+  background: #0051a2;
+}
+
+.continueButton {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  color: #0070f3;
+  text-decoration: none;
+  border: 1px solid #0070f3;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.continueButton:hover {
+  background: #f5f5f5;
+}
+
+.confirmButton {
+  padding: 1rem 2rem;
+  background: #22c55e;  /* 使用绿色表示确认 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+
+.confirmButton:hover {
+  background: #16a34a;
+}
+
+.orderInfo {
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: #f0fdf4;
+  border: 1px solid #22c55e;
+  border-radius: 5px;
+  color: #166534;
+}
+
+.orderInfo p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.spec {
+  font-size: 0.875rem;
+  color: #666;
+  background: #f5f5f5;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.confirmButton.submitting {
+  background: #86efac;
+  cursor: not-allowed;
+}
+
+.disabledButton {
+  opacity: 0.7;
+  cursor: not-allowed;
+} 
