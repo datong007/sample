@@ -69,7 +69,7 @@ export default function Cart() {
       if (result.success) {
         setOrderNumber(newOrderNumber)
         alert(`样品选择已确认！\n订单号：${newOrderNumber}`)
-        clearCart() // 使用新添加的 clearCart 函数
+        clearCart()
       } else {
         throw new Error(result.message || '提交失败')
       }

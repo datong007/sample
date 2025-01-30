@@ -50,70 +50,48 @@ export default function Products() {
   const [addedItems, setAddedItems] = useState({})
   const { cart, addToCart, stockLevels, setStockLevels } = useCart()
   const [quantities, setQuantities] = useState({})
+  const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0)
 
   useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products')
+        const data = await response.json()
+        
+        if (!Array.isArray(data?.products)) {
+          console.error('Invalid products data:', data)
+          setError('获取产品列表失败：数据格式错误')
+          return
+        }
+
+        // 确保每个产品都有正确的规格格式
+        const validatedProducts = data.products.map(product => ({
+          ...product,
+          specs: {
+            材料: product.specs?.材料 || '',
+            尺寸: product.specs?.尺寸 || '',
+            克重: product.specs?.克重 || '',
+            ...(product.specs || {})
+          }
+        }));
+
+        setProducts(validatedProducts)
+      } catch (error) {
+        console.error('获取产品列表失败:', error)
+        setError(error.message || '获取产品列表失败')
+      } finally {
+        setLoading(false)
+      }
+    }
     fetchProducts()
   }, [])
 
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch('/api/products')
-      const data = await response.json()
-      
-      if (!Array.isArray(data?.products)) {
-        console.error('Invalid products data:', data)
-        setError('获取产品列表失败：数据格式错误')
-        return
-      }
-
-      // 确保每个产品都有正确的规格格式
-      const validatedProducts = data.products.map(product => {
-        let specs = product.specs || {};
-        
-        // 如果 specs 是字符串，尝试解析它
-        if (typeof specs === 'string') {
-          try {
-            specs = JSON.parse(specs);
-          } catch (e) {
-            console.error('规格解析错误:', e);
-            specs = {};
-          }
-        }
-
-        return {
-          ...product,
-          specs: {
-            材料: specs.材料 || specs.material || '',
-            尺寸: specs.尺寸 || specs.size || '',
-            克重: specs.克重 || specs.weight || '',
-            ...specs
-          }
-        };
-      });
-
-      setProducts(validatedProducts)
-    } catch (error) {
-      console.error('获取产品列表失败:', error)
-      setError(error.message || '获取产品列表失败')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleAddToCart = (product) => {
     const quantity = quantities[product.id] || 1;
-    const currentStock = stockLevels[product.id] ?? product.stock;
     
-    // 检查库存是否足够
-    if (quantity > currentStock) {
-      alert('选择数量不能超过库存数量');
-      return;
-    }
-
     const success = addToCart({
       ...product,
       quantity,
-      selectedVariants: product.variants || {}
     });
 
     if (success) {
@@ -127,6 +105,9 @@ export default function Products() {
         ...prev,
         [product.id]: 1
       }));
+
+      // 显示添加成功提示
+      alert(`已添加 ${product.name} 到样品单`);
     }
   }
 
@@ -141,19 +122,10 @@ export default function Products() {
   }
 
   const handleQuantityChange = (productId, newQuantity) => {
-    const product = products.find(p => p.id === productId);
-    if (!product) return;
-    
-    const currentStock = stockLevels[productId] ?? product.stock;
-    
-    // 确保数量不超过当前库存
-    if (newQuantity > currentStock) {
-      alert('选择数量不能超过库存数量');
-      return;
-    }
+    if (newQuantity < 1) return;
     
     // 确保数量在有效范围内
-    const validQuantity = Math.max(1, Math.min(newQuantity, currentStock));
+    const validQuantity = Math.max(1, newQuantity);
     
     setQuantities(prev => ({
       ...prev,
@@ -177,9 +149,10 @@ export default function Products() {
       const searchLower = searchTerm.toLowerCase().trim();
       const matchesSearch = 
         product.name.toLowerCase().includes(searchLower) ||
-        product.model.toLowerCase().includes(searchLower);
+        product.model.toLowerCase().includes(searchLower) ||
+        product.description.toLowerCase().includes(searchLower);
       
-      return matchesSearch && (searchTerm ? true : matchesCategory);
+      return matchesSearch && matchesCategory;
     })
 
   const categories = ['all', ...new Set(products.map(p => p.category))].filter(Boolean)
@@ -187,167 +160,159 @@ export default function Products() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>浏览样品</title>
-        <meta name="description" content="浏览和选择样品" />
+        <title>样品展示</title>
+        <meta name="description" content="浏览可用的样品" />
       </Head>
 
       <main className={styles.main}>
-        {/* 顶部导航和搜索区域 */}
         <div className={styles.header}>
           <div className={styles.titleSection}>
-            <h1 className={styles.title}>样品列表</h1>
-            <div className={styles.searchBox}>
-              <input
-                type="text"
-                placeholder="搜索样品名称或编号..."
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                className={styles.searchInput}
-              />
-              {searchTerm && (
-                <button 
-                  onClick={() => handleSearch('')}
-                  className={styles.clearSearch}
-                  aria-label="清除搜索"
-                >
-                  ✕
-                </button>
-              )}
+            <div className={styles.headerControls}>
+              <Link href="/" className={styles.navButton}>
+                <svg {...homeIconProps} />
+                返回首页
+              </Link>
+              <div className={styles.searchBox}>
+                <input
+                  type="text"
+                  placeholder="搜索产品名称或编号..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={styles.searchInput}
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className={styles.clearSearch}
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+              <Link href="/sample-list" className={styles.navButton}>
+                <svg {...cartIconProps} />
+                查看样品单
+                {totalQuantity > 0 && (
+                  <span className={styles.badge}>{totalQuantity}</span>
+                )}
+              </Link>
             </div>
-          </div>
-          
-          <div className={styles.navigation}>
-            <Link href="/" className={styles.navButton}>
-              <svg {...homeIconProps} />
-              返回首页
-            </Link>
-            <Link href="/sample-list" className={styles.navButton}>
-              <svg {...cartIconProps} />
-              查看样品单
-              {cart?.items?.length > 0 && (
-                <span className={styles.badge}>{cart.items.length}</span>
-              )}
-            </Link>
           </div>
         </div>
 
-        {/* 分类过滤器 */}
         <div className={styles.categoryFilter}>
-          <button
-            className={`${styles.categoryButton} ${selectedCategory === 'all' ? styles.active : ''}`}
-            onClick={() => setSelectedCategory('all')}
-          >
-            全部
-          </button>
-          {categories.filter(c => c !== 'all').map(category => (
+          {categories.map(category => (
             <button
               key={category}
-              className={`${styles.categoryButton} ${selectedCategory === category ? styles.active : ''}`}
               onClick={() => setSelectedCategory(category)}
+              className={`${styles.categoryButton} ${
+                selectedCategory === category ? styles.active : ''
+              }`}
             >
-              {category}
+              {category === 'all' ? '全部' : category}
             </button>
           ))}
         </div>
 
-        {/* 产品网格 */}
-        <div className={styles.productGrid}>
-          {loading ? (
-            <div className={styles.loadingContainer}>
-              <Loading />
-            </div>
-          ) : error ? (
-            <div className={styles.error}>
-              <p>{error}</p>
-              <button onClick={fetchProducts} className={styles.retryButton}>
-                重试
-              </button>
-            </div>
-          ) : filteredProducts.length > 0 ? (
-            filteredProducts.map(product => (
-              <div key={product.id} className={styles.productCard}>
+        {loading ? (
+          <div className={styles.loading}>加载中...</div>
+        ) : error ? (
+          <div className={styles.error}>
+            <p>{error}</p>
+            <button onClick={() => {
+              setLoading(true);
+              fetchProducts();
+            }} className={styles.retryButton}>
+              重试
+            </button>
+          </div>
+        ) : filteredProducts.length === 0 ? (
+          <div className={styles.noResults}>
+            <p>未找到匹配的产品</p>
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategory('all');
+              }}
+              className={styles.resetButton}
+            >
+              重置筛选
+            </button>
+          </div>
+        ) : (
+          <div className={styles.grid}>
+            {filteredProducts.map((product) => (
+              <div key={product.id} className={styles.card}>
                 <div className={styles.imageContainer}>
-                  <img 
+                  <img
                     src={product.image || '/images/placeholder.jpg'}
-                    alt={product.name} 
-                    className={styles.productImage}
+                    alt={product.name}
+                    className={styles.image}
                     onError={(e) => {
                       if (!e.target.src.includes('placeholder.jpg')) {
-                        e.target.src = '/images/placeholder.jpg'
+                        e.target.src = '/images/placeholder.jpg';
                       }
                     }}
-                    loading="lazy"
                   />
                 </div>
-                <div className={styles.productInfo}>
-                  <div className={styles.header}>
-                    <h3>{product.name}</h3>
-                  </div>
+                <div className={styles.content}>
+                  <h2 className={styles.productName}>{product.name}</h2>
                   <p className={styles.model}>编号: {product.model}</p>
+                  <p className={styles.description}>{product.description}</p>
                   
-                  <SpecsDisplay specs={product.specs} />
-
-                  {product.stock > 0 ? (
-                    <div className={styles.quantitySection}>
-                      <label>数量:</label>
-                      <div className={styles.quantityControl}>
-                        <button 
-                          className={styles.quantityButton}
-                          onClick={() => handleQuantityChange(product.id, (quantities[product.id] || 1) - 1)}
-                          disabled={quantities[product.id] <= 1}
-                        >-</button>
-                        <input
-                          type="number"
-                          min="1"
-                          max={stockLevels[product.id] ?? product.stock}
-                          value={quantities[product.id] || 1}
-                          onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
-                          className={styles.quantityInput}
-                        />
-                        <button 
-                          className={styles.quantityButton}
-                          onClick={() => handleQuantityChange(product.id, (quantities[product.id] || 1) + 1)}
-                          disabled={(quantities[product.id] || 1) >= (stockLevels[product.id] ?? product.stock)}
-                        >+</button>
-                      </div>
-                      <span className={styles.stockInfo}>
-                        库存: {stockLevels[product.id] ?? product.stock}
-                      </span>
+                  {/* 规格展示 */}
+                  <div className={styles.specsContainer}>
+                    <div className={styles.specsList}>
+                      {Object.entries(product.specs || {}).map(([key, value]) => (
+                        <span key={key} className={styles.specTag}>
+                          {key}: {value}
+                        </span>
+                      ))}
                     </div>
-                  ) : (
-                    <p className={styles.outOfStock}>暂无库存</p>
-                  )}
-
-                  <div className={styles.cardActions}>
-                    <Link href={`/products/${product.id}`} className={styles.detailsButton}>
-                      查看详情
-                    </Link>
-                    <button 
-                      className={`${styles.button} ${addedItems[product.id] ? styles.added : ''}`}
-                      onClick={() => handleAddToCart(product)}
-                      disabled={addedItems[product.id] || (stockLevels[product.id] ?? product.stock) === 0}
-                    >
-                      {addedItems[product.id] ? '已添加 ✓' : 
-                       (stockLevels[product.id] ?? product.stock) === 0 ? '无库存' : '添加样品'}
-                    </button>
                   </div>
+
+                  {/* 数量选择 */}
+                  <div className={styles.quantitySection}>
+                    <label className={styles.quantityLabel}>数量：</label>
+                    <div className={styles.quantityControl}>
+                      <button 
+                        onClick={() => handleQuantityChange(product.id, (quantities[product.id] || 1) - 1)}
+                        className={styles.quantityButton}
+                        disabled={quantities[product.id] <= 1}
+                      >-</button>
+                      <input
+                        type="number"
+                        min="1"
+                        value={quantities[product.id] || 1}
+                        onChange={(e) => handleQuantityChange(product.id, parseInt(e.target.value) || 1)}
+                        className={styles.quantityInput}
+                      />
+                      <button 
+                        onClick={() => handleQuantityChange(product.id, (quantities[product.id] || 1) + 1)}
+                        className={styles.quantityButton}
+                      >+</button>
+                    </div>
+                  </div>
+
+                  {/* 添加到样品单按钮 */}
+                  <button
+                    className={`${styles.addButton} ${addedItems[product.id] ? styles.added : ''}`}
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    {addedItems[product.id] ? '已添加' : '添加到样品单'}
+                  </button>
                 </div>
               </div>
-            ))
-          ) : (
-            <div className={styles.noResults}>
-              <p>未找到匹配的产品</p>
-              {searchTerm && (
-                <button 
-                  className={styles.clearSearch}
-                  onClick={() => setSearchTerm('')}
-                >
-                  清除搜索
-                </button>
-              )}
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
+
+        <button
+          className={styles.scrollTopButton}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        >
+          ↑
+        </button>
       </main>
     </div>
   )

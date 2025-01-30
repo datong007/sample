@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import Link from 'next/link'
 import { useCart } from '../context/CartContext'
 import styles from '../styles/SampleList.module.css'
 import OrderHistory from '../components/OrderHistory'
 import SpecsDisplay from '../components/SpecsDisplay'
+import { getCurrentStock } from '../lib/db'
 
 // 更新国际区号数据
 const countryPhoneCodes = [
@@ -246,7 +247,7 @@ const countryPhoneCodes = [
 ].sort((a, b) => a.country.localeCompare(b.country, 'zh-CN'))
 
 export default function SampleList() {
-  const { cart, removeFromCart, updateQuantity, clearCart } = useCart()
+  const { cart, removeFromCart, updateQuantity, clearCart, stockLevels } = useCart()
   const [orderNumber, setOrderNumber] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitSuccess, setSubmitSuccess] = useState(false)
@@ -258,8 +259,24 @@ export default function SampleList() {
     notes: ''
   })
   const [formErrors, setFormErrors] = useState({})
-  const [showHistory, setShowHistory] = useState(false)
   const [phoneCode, setPhoneCode] = useState('86')
+  const [orders, setOrders] = useState([])
+  const [showHistory, setShowHistory] = useState(false)
+
+  // 从 localStorage 加载历史订单
+  useEffect(() => {
+    const savedOrders = localStorage.getItem('orderHistory')
+    if (savedOrders) {
+      setOrders(JSON.parse(savedOrders))
+    }
+  }, [])
+
+  // 保存订单到历史记录
+  const saveToHistory = (order) => {
+    const newOrders = [order, ...orders]
+    setOrders(newOrders)
+    localStorage.setItem('orderHistory', JSON.stringify(newOrders))
+  }
 
   const validateForm = () => {
     const errors = {}
@@ -292,18 +309,30 @@ export default function SampleList() {
 
     setSubmitting(true)
     try {
+      // 生成订单号
+      const orderNumber = `SO${Date.now()}`
+      
+      // 准备订单数据
       const orderData = {
-        orderNumber: `SO${Date.now()}`,
+        orderNumber,
         orderDate: new Date().toISOString(),
-        items: cart.items,
+        items: cart.items.map(item => ({
+          id: item.id,
+          model: item.model,
+          name: item.name,
+          quantity: item.quantity,
+          specs: item.specs
+        })),
         contactInfo: {
           ...contactInfo,
           phone: `+${phoneCode}-${contactInfo.phone}`
         },
-        status: 'pending'
+        status: 'pending',
+        totalItems: cart.items.reduce((sum, item) => sum + item.quantity, 0)
       }
 
-      const response = await fetch('/api/orders', {
+      // 提交订单
+      const orderResponse = await fetch('/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -311,29 +340,48 @@ export default function SampleList() {
         body: JSON.stringify(orderData)
       })
 
-      if (!response.ok) throw new Error('提交订单失败')
+      if (!orderResponse.ok) {
+        throw new Error('提交订单失败')
+      }
 
-      const result = await response.json()
+      const result = await orderResponse.json()
       if (result.success) {
-        setOrderNumber(result.orderNumber)
+        setOrderNumber(orderNumber)
         setSubmitSuccess(true)
+        
+        // 保存到历史记录
+        saveToHistory({
+          ...orderData,
+          orderDate: new Date().toISOString()
+        })
+        
+        // 清空购物车
         clearCart()
+        
+        // 显示成功提示
+        alert(`样品单提交成功！\n订单号：${orderNumber}`)
         
         // 滚动到顶部
         window.scrollTo({ top: 0, behavior: 'smooth' })
         
-        // 3秒后重置成功状态
+        // 3秒后隐藏成功提示
         setTimeout(() => {
           setSubmitSuccess(false)
+          setOrderNumber('')
         }, 3000)
+      } else {
+        throw new Error(result.message || '提交失败')
       }
     } catch (error) {
-      console.error('提交订单失败:', error)
-      alert('提交订单失败，请重试')
+      console.error('提交失败:', error)
+      alert('提交失败，请重试')
     } finally {
       setSubmitting(false)
     }
   }
+
+  // 计算总数量
+  const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
     <div className={styles.container}>
@@ -345,69 +393,68 @@ export default function SampleList() {
       <main className={styles.main}>
         <div className={styles.header}>
           <div className={styles.titleSection}>
-            <h1 className={styles.title}>我的样品单</h1>
-          </div>
-          <div className={styles.navigation}>
-            <Link href="/" className={styles.navButton}>
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
+            <div className={styles.navigation}>
+              <Link href="/" className={styles.navButton}>
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                返回首页
+              </Link>
+              <Link href="/products" className={styles.navButton}>
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <circle cx="9" cy="21" r="1"></circle>
+                  <circle cx="20" cy="21" r="1"></circle>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                继续浏览样品
+              </Link>
+              <button 
+                className={`${styles.navButton} ${showHistory ? styles.active : ''}`}
+                onClick={() => setShowHistory(!showHistory)}
               >
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-              </svg>
-              返回首页
-            </Link>
-            <Link href="/products" className={styles.navButton}>
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-              </svg>
-              继续浏览样品
-            </Link>
-            <button 
-              className={`${styles.navButton} ${showHistory ? styles.active : ''}`}
-              onClick={() => setShowHistory(!showHistory)}
-            >
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                width="20" 
-                height="20" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              >
-                <path d="M12 8v4l3 3"></path>
-                <circle cx="12" cy="12" r="10"></circle>
-              </svg>
-              历史订单
-            </button>
+                <svg 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  width="20" 
+                  height="20" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                历史订单
+              </button>
+            </div>
           </div>
         </div>
 
         {showHistory ? (
-          <OrderHistory />
+          <OrderHistory orders={orders} />
         ) : (
           <>
             {submitSuccess && (
@@ -484,153 +531,155 @@ export default function SampleList() {
               </div>
             ) : !submitSuccess && (
               <>
-                <div className={styles.cartItems}>
-                  <div className={styles.cartHeader}>
-                    <div className={styles.productImage}>图片</div>
-                    <div className={styles.productId}>产品编号</div>
-                    <div className={styles.productName}>产品名称</div>
-                    <div className={styles.specs}>规格</div>
-                    <div className={styles.quantity}>数量</div>
-                    <div className={styles.actions}>操作</div>
-                  </div>
-                  
-                  {cart.items.map((item) => (
-                    <div key={item.id} className={styles.cartItem}>
-                      <div className={styles.productImage}>
-                        <img 
-                          src={item.image || '/images/placeholder.jpg'} 
-                          alt={item.name}
-                          onError={(e) => {
-                            if (!e.target.src.includes('placeholder.jpg')) {
-                              e.target.src = '/images/placeholder.jpg'
-                            }
-                          }}
-                        />
-                      </div>
-                      <div className={styles.productId}>{item.model}</div>
-                      <div className={styles.productName}>{item.name}</div>
-                      <div className={styles.specs}>
-                        <SpecsDisplay specs={item.specs} />
-                      </div>
-                      <div className={styles.quantityControl}>
-                        <button 
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          disabled={item.quantity <= 1}
-                          className={styles.quantityButton}
-                        >-</button>
-                        <span className={styles.quantityValue}>{item.quantity}</span>
-                        <button 
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          disabled={item.quantity >= item.stock}
-                          className={styles.quantityButton}
-                        >+</button>
-                      </div>
-                      <div className={styles.actions}>
-                        <button 
-                          onClick={() => removeFromCart(item.id)}
-                          className={styles.deleteButton}
-                        >
-                          删除
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                <div className={styles.cartTable}>
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>图片</th>
+                        <th>产品编号</th>
+                        <th>产品名称</th>
+                        <th>规格</th>
+                        <th>数量</th>
+                        <th>操作</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {cart.items.map((item) => (
+                        <tr key={item.id} className={styles.cartItem}>
+                          <td className={styles.productImage}>
+                            <img 
+                              src={item.image || '/images/placeholder.jpg'} 
+                              alt={item.name}
+                              onError={(e) => {
+                                if (!e.target.src.includes('placeholder.jpg')) {
+                                  e.target.src = '/images/placeholder.jpg'
+                                }
+                              }}
+                            />
+                          </td>
+                          <td className={styles.productId}>{item.model}</td>
+                          <td className={styles.productName}>{item.name}</td>
+                          <td className={styles.specs}>
+                            {Object.entries(item.specs || {}).map(([key, value]) => (
+                              <div key={key} className={styles.specItem}>
+                                <span className={styles.specLabel}>{key}:</span>
+                                <span className={styles.specValue}>{value}</span>
+                              </div>
+                            ))}
+                          </td>
+                          <td className={styles.quantityControl}>
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              disabled={item.quantity <= 1}
+                              className={styles.quantityButton}
+                            >-</button>
+                            <span className={styles.quantityValue}>{item.quantity}</span>
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className={styles.quantityButton}
+                            >+</button>
+                          </td>
+                          <td className={styles.actions}>
+                            <button 
+                              onClick={() => removeFromCart(item.id)}
+                              className={styles.deleteButton}
+                            >
+                              删除
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                      <tr className={styles.totalRow}>
+                        <td colSpan="4" className={styles.totalLabel}>总数量</td>
+                        <td colSpan="2" className={styles.totalValue}>{totalQuantity}</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
 
                 <div className={styles.contactForm}>
                   <h2>联系信息</h2>
                   <div className={styles.formGrid}>
                     <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label htmlFor="name">姓名 *</label>
-                        <input
-                          type="text"
-                          id="name"
-                          name="name"
-                          value={contactInfo.name}
-                          onChange={handleInputChange}
-                          className={formErrors.name ? styles.errorInput : ''}
-                        />
-                        {formErrors.name && (
-                          <span className={styles.errorText}>{formErrors.name}</span>
-                        )}
-                      </div>
-                      <div className={styles.formGroup}>
-                        <label htmlFor="email">邮箱 *</label>
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          value={contactInfo.email}
-                          onChange={handleInputChange}
-                          className={formErrors.email ? styles.errorInput : ''}
-                        />
-                        {formErrors.email && (
-                          <span className={styles.errorText}>{formErrors.email}</span>
-                        )}
-                      </div>
+                      <label>姓名 <span className={styles.required}>*</span></label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={contactInfo.name}
+                        onChange={handleInputChange}
+                        className={formErrors.name ? styles.errorInput : ''}
+                      />
+                      {formErrors.name && <span className={styles.errorText}>{formErrors.name}</span>}
                     </div>
 
                     <div className={styles.formRow}>
-                      <div className={styles.formGroup}>
-                        <label htmlFor="company">公司名称</label>
-                        <input
-                          type="text"
-                          id="company"
-                          name="company"
-                          value={contactInfo.company}
-                          onChange={handleInputChange}
-                        />
-                      </div>
-                      <div className={styles.formGroup}>
-                        <label htmlFor="phone">电话 *</label>
-                        <div className={styles.phoneInput}>
-                          <select
-                            value={phoneCode}
-                            onChange={(e) => setPhoneCode(e.target.value)}
-                            className={styles.phoneCode}
-                          >
-                            {countryPhoneCodes.map(({ code, country }) => (
-                              <option key={code} value={code}>
-                                +{code} {country}
-                              </option>
-                            ))}
-                          </select>
-                          <input
-                            type="tel"
-                            id="phone"
-                            name="phone"
-                            value={contactInfo.phone}
-                            onChange={handleInputChange}
-                            className={`${styles.phoneNumber} ${formErrors.phone ? styles.errorInput : ''}`}
-                            placeholder="请输入电话号码"
-                          />
-                        </div>
-                        {formErrors.phone && (
-                          <span className={styles.errorText}>{formErrors.phone}</span>
-                        )}
-                      </div>
+                      <label>邮箱 <span className={styles.required}>*</span></label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={contactInfo.email}
+                        onChange={handleInputChange}
+                        className={formErrors.email ? styles.errorInput : ''}
+                      />
+                      {formErrors.email && <span className={styles.errorText}>{formErrors.email}</span>}
                     </div>
 
-                    <div className={styles.formGroup}>
-                      <label htmlFor="notes">备注</label>
+                    <div className={styles.formRow}>
+                      <label>电话 <span className={styles.required}>*</span></label>
+                      <div className={styles.phoneInput}>
+                        <select
+                          value={phoneCode}
+                          onChange={(e) => setPhoneCode(e.target.value)}
+                          className={styles.phoneCode}
+                        >
+                          {countryPhoneCodes.map(({ code, country }) => (
+                            <option key={code} value={code}>
+                              +{code} {country}
+                            </option>
+                          ))}
+                        </select>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={contactInfo.phone}
+                          onChange={handleInputChange}
+                          className={formErrors.phone ? styles.errorInput : ''}
+                        />
+                      </div>
+                      {formErrors.phone && <span className={styles.errorText}>{formErrors.phone}</span>}
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <label>公司</label>
+                      <input
+                        type="text"
+                        name="company"
+                        value={contactInfo.company}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div className={styles.formRow}>
+                      <label>备注</label>
                       <textarea
-                        id="notes"
                         name="notes"
                         value={contactInfo.notes}
                         onChange={handleInputChange}
-                        rows="4"
+                        placeholder="请输入其他需要说明..."
+                        rows={4}
                       />
                     </div>
                   </div>
 
-                  <button
-                    className={`${styles.submitButton} ${submitting ? styles.submitting : ''}`}
-                    onClick={handleSubmit}
-                    disabled={submitting}
-                  >
-                    {submitting ? '提交中...' : '提交样品申请'}
-                  </button>
+                  <div className={styles.submitSection}>
+                    <button
+                      onClick={handleSubmit}
+                      disabled={submitting || cart.items.length === 0}
+                      className={styles.submitButton}
+                    >
+                      {submitting ? '提交中...' : '确认样品'}
+                    </button>
+                  </div>
                 </div>
               </>
             )}

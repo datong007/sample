@@ -1,4 +1,5 @@
 import { addProduct, getProducts } from '../../data/products'
+import { initializeStock } from '../../lib/db'
 
 const products = [
   { 
@@ -158,6 +159,7 @@ const products = [
 export default function handler(req, res) {
   try {
     if (req.method === 'GET') {
+      initializeStock(products)
       res.status(200).json({ products })
     } else {
       res.status(405).json({ 
