@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext'
 import styles from '../styles/Cart.module.css'
 
 export default function Cart() {
-  const { cart, removeFromCart, updateQuantity } = useCart()
+  const { cart, removeFromCart, updateQuantity, clearCart } = useCart()
   const [orderNumber, setOrderNumber] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -23,6 +23,7 @@ export default function Cart() {
       setIsSubmitting(true)
       const newOrderNumber = generateOrderNumber()
       
+      // 准备订单数据
       const orderData = {
         orderNumber: newOrderNumber,
         orderDate: new Date().toISOString(),
@@ -30,17 +31,28 @@ export default function Cart() {
           id: item.id,
           name: item.name,
           quantity: item.quantity,
-          specs: item.specs
+          specs: item.specs,
+          stock: item.stock // 添加库存信息
         })),
-        totalItems: totalItems,
-        status: 'pending',
-        customerInfo: {
-          submitTime: new Date().toISOString(),
-          browserInfo: navigator.userAgent
-        }
+        totalItems,
+        status: 'pending'
       }
 
-      const response = await fetch('/api/orders', {
+      // 更新库存
+      const stockUpdateResponse = await fetch('/api/update-stock', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ items: cart.items }),
+      })
+
+      if (!stockUpdateResponse.ok) {
+        throw new Error('库存更新失败')
+      }
+
+      // 提交订单
+      const orderResponse = await fetch('/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -48,18 +60,16 @@ export default function Cart() {
         body: JSON.stringify(orderData),
       })
 
-      if (!response.ok) {
+      if (!orderResponse.ok) {
         throw new Error('提交订单失败')
       }
 
-      const result = await response.json()
+      const result = await orderResponse.json()
       
       if (result.success) {
         setOrderNumber(newOrderNumber)
-        alert(`样品选择已确认！\n订单号：${newOrderNumber}\n我们会尽快处理您的样品申请。`)
-        
-        // 可以清空购物车
-        // clearCart() // 需要在CartContext中添加此功能
+        alert(`样品选择已确认！\n订单号：${newOrderNumber}`)
+        clearCart() // 使用新添加的 clearCart 函数
       } else {
         throw new Error(result.message || '提交失败')
       }

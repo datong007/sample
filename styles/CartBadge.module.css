@@ -1,0 +1,79 @@
+.cartBadge {
+  position: fixed;
+  right: 30px;
+  top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #4a5568;
+  text-decoration: none;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  background: white;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cartBadge:hover {
+  color: #2d3748;
+  transform: translateY(-2px);
+}
+
+.iconWrapper {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #9f7aea;
+  color: white;
+  font-size: 12px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.text {
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+  }
+  80% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .cartBadge {
+    right: 20px;
+    top: 20px;
+  }
+
+  .iconWrapper {
+    width: 44px;
+    height: 44px;
+  }
+
+  .text {
+    font-size: 12px;
+  }
+} 

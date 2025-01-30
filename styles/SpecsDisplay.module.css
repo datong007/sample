@@ -1,0 +1,66 @@
+.specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.spec {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.specLabel {
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.specValue {
+  color: #2d3748;
+}
+
+/* 不同类型规格的样式 */
+.材料 {
+  background: #ebf8ff;
+  border-color: #90cdf4;
+}
+
+.材料 .specLabel {
+  color: #2c5282;
+}
+
+.尺寸 {
+  background: #faf5ff;
+  border-color: #d6bcfa;
+}
+
+.尺寸 .specLabel {
+  color: #553c9a;
+}
+
+.克重 {
+  background: #f0fff4;
+  border-color: #9ae6b4;
+}
+
+.克重 .specLabel {
+  color: #276749;
+}
+
+@media (max-width: 640px) {
+  .specs {
+    margin: 0.5rem 0;
+  }
+
+  .spec {
+    font-size: 0.8rem;
+    padding: 0.2rem 0.5rem;
+  }
+} 

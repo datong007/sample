@@ -1,3 +1,5 @@
+import { updateProductStock } from '../../lib/db' // 假设这是你的数据库操作函数
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
@@ -6,10 +8,9 @@ export default async function handler(req, res) {
   try {
     const { items } = req.body;
 
-    // 这里应该是你的数据库更新逻辑
-    // 示例：更新每个产品的库存
+    // 批量更新库存
     for (const item of items) {
-      await updateProductStock(item.id, item.quantity);
+      await updateProductStock(item.id, -item.quantity); // 减少库存
     }
 
     res.status(200).json({ success: true, message: '库存更新成功' });
