@@ -8,10 +8,9 @@ const JWT_SECRET = new TextEncoder().encode(
 export async function middleware(request) {
   const { pathname } = request.nextUrl
 
-  // 只处理管理后台路径，但排除登录页面和静态资源
-  if (pathname.startsWith('/admin') && 
-      pathname !== '/admin/login' && 
-      !pathname.includes('.')) {
+  // 保护管理后台路径和 API
+  if ((pathname.startsWith('/admin') && pathname !== '/admin/login') || 
+      pathname.startsWith('/api/admin/')) {
     try {
       const token = request.cookies.get('auth')?.value
 
@@ -46,5 +45,6 @@ export const config = {
      * 但是不匹配/admin/login和静态资源
      */
     '/admin/:path*',
+    '/api/admin/:path*'
   ]
 } 

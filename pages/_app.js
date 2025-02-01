@@ -2,6 +2,7 @@ import ErrorBoundary from '../components/ErrorBoundary'
 import '../styles/globals.css'
 import { CartProvider } from '../context/CartContext'
 import { useEffect } from 'react'
+import { validateEnv } from '../utils/validateEnv'
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -13,6 +14,12 @@ function MyApp({ Component, pageProps }) {
 
     window.addEventListener('error', handleError)
     window.addEventListener('unhandledrejection', handleError)
+
+    try {
+      validateEnv()
+    } catch (error) {
+      console.error('Environment validation failed:', error)
+    }
 
     return () => {
       window.removeEventListener('error', handleError)

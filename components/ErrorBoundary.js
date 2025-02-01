@@ -3,15 +3,15 @@ import React from 'react'
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)
-    this.state = { hasError: false }
+    this.state = { hasError: false, error: null }
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true }
+    return { hasError: true, error }
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('错误边界捕获到错误:', error, errorInfo)
+    console.error('Error caught by boundary:', error, errorInfo)
   }
 
   render() {
@@ -20,23 +20,21 @@ class ErrorBoundary extends React.Component {
         <div style={{ 
           padding: '2rem', 
           textAlign: 'center',
-          color: '#e53e3e'
+          color: '#ef4444'
         }}>
-          <h2>哎呀！出错了</h2>
-          <p>请刷新页面重试</p>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              padding: '0.5rem 1rem',
-              background: '#9f7aea',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer'
-            }}
-          >
-            刷新页面
-          </button>
+          <h2>出错了！</h2>
+          <p>请刷新页面或联系管理员</p>
+          {process.env.NODE_ENV === 'development' && (
+            <pre style={{ 
+              marginTop: '1rem',
+              padding: '1rem',
+              background: '#fee2e2',
+              borderRadius: '0.5rem',
+              overflow: 'auto'
+            }}>
+              {this.state.error?.toString()}
+            </pre>
+          )}
         </div>
       )
     }

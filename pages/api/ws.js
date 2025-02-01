@@ -1,5 +1,6 @@
 import { Server } from 'ws'
 import { jwtVerify } from 'jose'
+import { parse } from 'cookie'
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'your-secret-key'
@@ -7,24 +8,24 @@ const JWT_SECRET = new TextEncoder().encode(
 
 const wss = new Server({ noServer: true })
 
-wss.on('connection', (ws, req) => {
+wss.on('connection', async (ws, req) => {
   ws.isAdmin = false
 
-  // 验证管理员身份
-  const cookies = req.headers.cookie?.split(';').reduce((acc, cookie) => {
-    const [key, value] = cookie.trim().split('=')
-    acc[key] = value
-    return acc
-  }, {})
+  try {
+    const cookieHeader = req.headers.cookie || ''
+    const cookies = parse(cookieHeader)
+    const token = cookies.auth
 
-  if (cookies?.adminToken) {
-    try {
-      jwtVerify(cookies.adminToken, JWT_SECRET)
-        .then(() => {
-          ws.isAdmin = true
-        })
-        .catch(console.error)
+    if (token) {
+      try {
+        const { payload } = await jwtVerify(token, JWT_SECRET)
+        ws.isAdmin = payload.role === 'admin'
+      } catch (error) {
+        console.error('WebSocket token verification failed:', error)
+      }
     }
+  } catch (error) {
+    console.error('WebSocket cookie parsing failed:', error)
   }
 
   ws.on('message', async (message) => {
