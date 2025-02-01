@@ -1,0 +1,72 @@
+[
+  {
+    "id": "1738376580126",
+    "name": "1",
+    "model": "1",
+    "description": "",
+    "category": "功能面料",
+    "images": [
+      {
+        "url": "/images/products/f688e7e3c0c6ee92ba44d4f02.jpg",
+        "name": "SA-001.jpg"
+      },
+      {
+        "url": "/images/products/f688e7e3c0c6ee92ba44d4f03.jpg",
+        "name": "JHDH.jpg"
+      }
+    ],
+    "createdAt": "2025-02-01T02:23:00.126Z"
+  },
+  {
+    "id": "1738376746544",
+    "name": "133",
+    "model": "b-11",
+    "description": "",
+    "category": "功能面料",
+    "images": [
+      {
+        "url": "/images/products/f688e7e3c0c6ee92ba44d4f04.jpg",
+        "name": "SB-002.jpg"
+      },
+      {
+        "url": "/images/products/f688e7e3c0c6ee92ba44d4f05.jpg",
+        "name": "SE-005.jpg"
+      }
+    ],
+    "createdAt": "2025-02-01T02:25:46.544Z"
+  },
+  {
+    "id": "1738377156315",
+    "name": "1",
+    "model": "B101",
+    "description": "",
+    "category": "功能面料",
+    "images": [
+      {
+        "url": "/images/products/f688e7e3c0c6ee92ba44d4f06.jpg",
+        "name": "SB-002.jpg"
+      }
+    ],
+    "image": "/images/products/f688e7e3c0c6ee92ba44d4f06.jpg",
+    "createdAt": "2025-02-01T02:32:36.315Z"
+  },
+  {
+    "id": "1738377210016",
+    "name": "1111",
+    "model": "B102",
+    "description": "",
+    "category": "运动面料",
+    "images": [
+      {
+        "url": "/images/products/f688e7e3c0c6ee92ba44d4f07.jpg",
+        "name": "JHDH.jpg"
+      },
+      {
+        "url": "/images/products/f688e7e3c0c6ee92ba44d4f08.jpg",
+        "name": "SA-001.jpg"
+      }
+    ],
+    "image": "/images/products/f688e7e3c0c6ee92ba44d4f07.jpg",
+    "createdAt": "2025-02-01T02:33:30.016Z"
+  }
+]

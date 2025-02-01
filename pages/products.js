@@ -52,37 +52,24 @@ export default function Products() {
   const [quantities, setQuantities] = useState({})
   const totalQuantity = getTotalQuantity()
 
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const response = await fetch('/api/products')
-        const data = await response.json()
-        
-        if (!Array.isArray(data?.products)) {
-          console.error('Invalid products data:', data)
-          setError('获取产品列表失败：数据格式错误')
-          return
-        }
-
-        // 确保每个产品都有正确的规格格式
-        const validatedProducts = data.products.map(product => ({
-          ...product,
-          specs: {
-            材料: product.specs?.材料 || '',
-            尺寸: product.specs?.尺寸 || '',
-            克重: product.specs?.克重 || '',
-            ...(product.specs || {})
-          }
-        }));
-
-        setProducts(validatedProducts)
-      } catch (error) {
-        console.error('获取产品列表失败:', error)
-        setError(error.message || '获取产品列表失败')
-      } finally {
-        setLoading(false)
+  const fetchProducts = async () => {
+    try {
+      setError(null)
+      const response = await fetch('/api/products')
+      if (!response.ok) {
+        throw new Error('获取产品列表失败')
       }
+      const data = await response.json()
+      setProducts(data.products || [])
+    } catch (err) {
+      console.error('Error fetching products:', err)
+      setError(err.message)
+    } finally {
+      setLoading(false)
     }
+  }
+
+  useEffect(() => {
     fetchProducts()
   }, [])
 
@@ -220,8 +207,8 @@ export default function Products() {
           <div className={styles.error}>
             <p>{error}</p>
             <button onClick={() => {
-              setLoading(true);
-              fetchProducts();
+              setLoading(true)
+              fetchProducts()
             }} className={styles.retryButton}>
               重试
             </button>

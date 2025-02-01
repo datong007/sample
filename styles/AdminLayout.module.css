@@ -6,4 +6,54 @@
 .main {
   padding-top: 80px;
   min-height: calc(100vh - 80px);
+}
+
+.adminContainer {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background: #2d3748;
+  color: white;
+  padding: 1.5rem;
+}
+
+.logo {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menuItem {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.menuItem:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.content {
+  flex: 1;
+  padding: 2rem;
+  background: #f7fafc;
 } 
