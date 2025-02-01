@@ -1,35 +1,38 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import { getCurrentStock, initializeStock } from '../lib/db';
+import { createContext, useContext, useState } from 'react';
 
 export const CartContext = createContext();
 
 export function CartProvider({ children }) {
   const [cart, setCart] = useState({ items: [] });
-  const [stockLevels, setStockLevels] = useState({});
 
   const getTotalQuantity = () => {
-    return cart.items.reduce((sum, item) => sum + item.quantity, 0);
+    return cart.items.reduce((sum, item) => {
+      const quantity = parseInt(item.quantity) || 0;
+      return sum + quantity;
+    }, 0);
   };
 
   const addToCart = (product) => {
-    setCart(prev => {
-      const existingItem = prev.items.find(item => item.id === product.id);
+    setCart(prevCart => {
+      const existingItem = prevCart.items.find(item => item.id === product.id);
       
       if (existingItem) {
+        const newQuantity = parseInt(existingItem.quantity) + parseInt(product.quantity);
+        
         return {
-          ...prev,
-          items: prev.items.map(item =>
+          ...prevCart,
+          items: prevCart.items.map(item =>
             item.id === product.id
-              ? { ...item, quantity: item.quantity + product.quantity }
+              ? { ...item, quantity: newQuantity }
               : item
           )
         };
-      } else {
-        return {
-          ...prev,
-          items: [...prev.items, { ...product }]
-        };
       }
+      
+      return {
+        ...prevCart,
+        items: [...prevCart.items, product]
+      };
     });
     return true;
   };
@@ -65,8 +68,6 @@ export function CartProvider({ children }) {
       removeFromCart, 
       updateQuantity, 
       clearCart,
-      stockLevels,
-      setStockLevels,
       getTotalQuantity
     }}>
       {children}

@@ -21,6 +21,7 @@ export default function Cart() {
   const handleConfirm = async () => {
     try {
       setIsSubmitting(true)
+      
       const newOrderNumber = generateOrderNumber()
       
       // 准备订单数据
@@ -32,23 +33,9 @@ export default function Cart() {
           name: item.name,
           quantity: item.quantity,
           specs: item.specs,
-          stock: item.stock // 添加库存信息
         })),
         totalItems,
         status: 'pending'
-      }
-
-      // 更新库存
-      const stockUpdateResponse = await fetch('/api/update-stock', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ items: cart.items }),
-      })
-
-      if (!stockUpdateResponse.ok) {
-        throw new Error('库存更新失败')
       }
 
       // 提交订单

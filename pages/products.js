@@ -48,7 +48,7 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedVariants, setSelectedVariants] = useState({})
   const [addedItems, setAddedItems] = useState({})
-  const { cart, addToCart, stockLevels, setStockLevels, getTotalQuantity } = useCart()
+  const { cart, addToCart, getTotalQuantity } = useCart()
   const [quantities, setQuantities] = useState({})
   const totalQuantity = getTotalQuantity()
 
@@ -87,27 +87,27 @@ export default function Products() {
   }, [])
 
   const handleAddToCart = (product) => {
-    const quantity = quantities[product.id] || 1;
+    const quantity = quantities[product.id] || 1
     
     const success = addToCart({
       ...product,
       quantity,
-    });
+    })
 
     if (success) {
       setAddedItems(prev => ({
         ...prev,
         [product.id]: true
-      }));
+      }))
       
       // 重置数量
       setQuantities(prev => ({
         ...prev,
         [product.id]: 1
-      }));
+      }))
 
       // 显示添加成功提示
-      alert(`已添加 ${product.name} 到样品单`);
+      alert(`已添加 ${product.name} 到样品单`)
     }
   }
 
@@ -122,15 +122,15 @@ export default function Products() {
   }
 
   const handleQuantityChange = (productId, newQuantity) => {
-    if (newQuantity < 1) return;
+    if (newQuantity < 1) return
     
     // 确保数量在有效范围内
-    const validQuantity = Math.max(1, newQuantity);
+    const validQuantity = Math.max(1, newQuantity)
     
     setQuantities(prev => ({
       ...prev,
       [productId]: validQuantity
-    }));
+    }))
   }
 
   const handleSearch = (value) => {

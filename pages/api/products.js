@@ -1,5 +1,4 @@
 import { addProduct, getProducts } from '../../data/products'
-import { initializeStock } from '../../lib/db'
 
 const products = [
   { 
@@ -13,7 +12,6 @@ const products = [
       克重: '150g/m² - 200g/m²',
       颜色: '深蓝/黑色/军绿'
     },
-    stock: 15,
     category: '功能面料',
     image: '/images/fabric-1.jpg',
     variants: {
@@ -33,7 +31,6 @@ const products = [
       克重: '160g/m² - 180g/m²',
       特点: '四向弹力'
     },
-    stock: 20,
     category: '运动面料',
     image: '/images/fabric-2.jpg',
     variants: {
@@ -47,7 +44,6 @@ const products = [
     name: '有机棉针织布',
     model: 'OC-003',
     description: '100%有机棉，环保认证，适合婴童服装',
-    stock: 25,
     category: '天然面料',
     image: '/images/fabric-3.jpg',
     variants: {
@@ -61,7 +57,6 @@ const products = [
     name: '抗菌防护面料',
     model: 'AB-004',
     description: '添加抗菌防护层，适用于医疗防护服装',
-    stock: 30,
     category: '功能面料',
     image: '/images/fabric-4.jpg',
     variants: {
@@ -75,7 +70,6 @@ const products = [
     name: '仿麂皮绒面料',
     model: 'SD-005',
     description: '超柔软仿麂皮绒，适用于家居服和玩具',
-    stock: 18,
     category: '装饰面料',
     image: '/images/fabric-5.jpg',
     variants: {
@@ -89,7 +83,6 @@ const products = [
     name: '再生环保面料',
     model: 'RC-006',
     description: '由回收塑料瓶制成的环保面料，适合休闲服装',
-    stock: 22,
     category: '环保面料',
     image: '/images/fabric-6.jpg',
     variants: {
@@ -103,7 +96,6 @@ const products = [
     name: '保暖抓绒面料',
     model: 'FL-007',
     description: '双面抓绒保暖面料，适用于冬季外套',
-    stock: 12,
     category: '保暖面料',
     image: '/images/fabric-7.jpg',
     variants: {
@@ -117,7 +109,6 @@ const products = [
     name: '轻薄防晒面料',
     model: 'UV-008',
     description: 'UPF50+防晒面料，适合夏季防晒服',
-    stock: 28,
     category: '功能面料',
     image: '/images/fabric-8.jpg',
     variants: {
@@ -131,7 +122,6 @@ const products = [
     name: '蜂窝网眼布',
     model: 'HM-009',
     description: '运动面料，高透气性，适合运动服装',
-    stock: 16,
     category: '运动面料',
     image: '/images/fabric-9.jpg',
     variants: {
@@ -145,7 +135,6 @@ const products = [
     name: '仿丝绸面料',
     model: 'SK-010',
     description: '柔滑仿真丝面料，适合时装和衬衫',
-    stock: 20,
     category: '时装面料',
     image: '/images/fabric-10.jpg',
     variants: {
@@ -159,13 +148,11 @@ const products = [
 export default function handler(req, res) {
   try {
     if (req.method === 'GET') {
-      initializeStock(products)
       res.status(200).json({ products })
     } else {
       res.status(405).json({ 
         success: false, 
-        message: '方法不允许',
-        error: 'Method not allowed'
+        message: '方法不允许'
       })
     }
   } catch (error) {

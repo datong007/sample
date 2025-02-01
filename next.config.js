@@ -23,8 +23,12 @@ const nextConfig = {
   env: {
     MONGODB_URI: process.env.MONGODB_URI,
     MONGODB_DB: process.env.MONGODB_DB,
+    PORT: process.env.PORT || 3000,
   },
   output: 'standalone',
+  serverOptions: {
+    port: parseInt(process.env.PORT || '3000', 10),
+  }
 }
 
 module.exports = nextConfig 
