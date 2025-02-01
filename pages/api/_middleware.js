@@ -10,7 +10,7 @@ const PROTECTED_PATHS = [
   '/api/products/create',
   '/api/products/delete',
   '/api/products/update',
-  '/api/orders/update',
+  '/api/orders/[id]',
   '/api/orders/delete',
   '/api/stock/update',
   '/api/upload'

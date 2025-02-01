@@ -1,0 +1,256 @@
+.adminOrderList {
+  padding: 2rem;
+}
+
+.statusSelect {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.statusSelect:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* 不同状态的样式 */
+.statusSelect.pending {
+  background-color: #fef3c7;
+  border-color: #f59e0b;
+  color: #d97706;
+}
+
+.statusSelect.processing {
+  background-color: #e0f2fe;
+  border-color: #0ea5e9;
+  color: #0369a1;
+}
+
+.statusSelect.completed {
+  background-color: #dcfce7;
+  border-color: #22c55e;
+  color: #15803d;
+}
+
+.status.cancelled {
+  background-color: #fee2e2;
+  border-color: #ef4444;
+  color: #b91c1c;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 640px) {
+  .adminOrderList {
+    padding: 1rem;
+  }
+
+  .headerButtons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .statusSelect {
+    width: 100%;
+  }
+}
+
+.expandedOrder {
+  padding: 1rem;
+  border-top: 1px solid #e2e8f0;
+  background: #fff;
+}
+
+.orderDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contactInfo {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.contactInfo h4 {
+  margin: 0 0 0.75rem 0;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.contactInfo p {
+  margin: 0.25rem 0;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.contactInfo strong {
+  color: #1e293b;
+  font-weight: 500;
+  margin-right: 0.5rem;
+}
+
+.itemList {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.itemList h4 {
+  margin: 0 0 1rem 0;
+  color: #1e293b;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.item {
+  display: flex;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.item:last-child {
+  margin-bottom: 0;
+}
+
+.itemImage {
+  width: 80px;
+  height: 80px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid #e2e8f0;
+}
+
+.itemImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.itemDetails {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.itemDetails h5 {
+  margin: 0;
+  font-size: 1rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.itemModel {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.25rem 0;
+}
+
+.spec {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  background: #f1f5f9;
+  border-radius: 2px;
+  color: #475569;
+}
+
+.itemQuantity {
+  margin-top: auto;
+  font-size: 0.875rem;
+  color: #475569;
+}
+
+@media (max-width: 640px) {
+  .expandedOrder {
+    padding: 0.75rem;
+  }
+
+  .item {
+    flex-direction: column;
+  }
+  
+  .itemImage {
+    width: 100%;
+    height: 160px;
+  }
+  
+  .itemDetails {
+    text-align: center;
+  }
+  
+  .specs {
+    justify-content: center;
+  }
+
+  .itemQuantity {
+    margin-top: 0.5rem;
+  }
+}
+
+.totalItems {
+  margin: 0.5rem 0 0;
+  color: #4a5568;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.exportButton,
+.printButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.exportButton {
+  background: #4f46e5;
+  color: white;
+}
+
+.exportButton:hover {
+  background: #4338ca;
+}
+
+.printButton {
+  background: #10b981;
+  color: white;
+}
+
+.printButton:hover {
+  background: #059669;
+}
+
+@media (max-width: 640px) {
+  .headerButtons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .exportButton,
+  .printButton {
+    width: 100%;
+  }
+} 

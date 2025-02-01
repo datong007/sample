@@ -13,7 +13,7 @@ export async function middleware(request) {
       pathname !== '/admin/login' && 
       !pathname.includes('.')) {
     try {
-      const token = request.cookies.get('adminToken')
+      const token = request.cookies.get('auth')?.value
 
       if (!token) {
         // 没有token，重定向到登录页
@@ -22,7 +22,7 @@ export async function middleware(request) {
 
       try {
         // 验证token
-        await jwtVerify(token.value, JWT_SECRET)
+        await jwtVerify(token, JWT_SECRET)
         return NextResponse.next()
       } catch (error) {
         // token无效，重定向到登录页

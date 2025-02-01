@@ -9,16 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "cookie": "^1.0.2",
+    "cookie": "^0.6.0",
     "formidable": "^2.1.2",
     "html2canvas": "^1.4.1",
-    "jose": "^5.9.6",
-    "jspdf": "^2.5.2",
-    "jspdf-autotable": "^3.8.4",
+    "jose": "^5.2.3",
     "mongodb": "^5.0.0",
     "next": "^14.0.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.5.31"
   },
   "devDependencies": {
     "eslint": "^8.0.0",

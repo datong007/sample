@@ -29,16 +29,28 @@
   align-items: center;
 }
 
+.orderInfo {
+  flex: 1;
+}
+
 .orderInfo h3 {
   margin: 0;
   color: #2d3748;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
-.orderDate {
+.orderDate,
+.totalItems {
   margin: 0.5rem 0 0;
   color: #718096;
   font-size: 0.9rem;
+}
+
+.totalItems {
+  margin: 0.5rem 0 0;
+  color: #4a5568;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 .status {
@@ -97,12 +109,12 @@
 }
 
 .item {
-  display: grid;
-  grid-template-columns: 60px 1fr auto;
+  display: flex;
   gap: 1rem;
   padding: 1rem;
-  border-bottom: 1px solid #e2e8f0;
-  align-items: center;
+  background: #f8fafc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
 }
 
 .item:last-child {
@@ -110,43 +122,56 @@
 }
 
 .itemImage {
-  width: 60px;
-  height: 60px;
-  border-radius: 6px;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .itemImage img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 8px;
 }
 
-.itemInfo h4 {
-  margin: 0 0 0.25rem;
+.itemDetails {
+  flex: 1;
+}
+
+.itemDetails h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
   color: #2d3748;
-  font-size: 1rem;
 }
 
 .itemModel {
-  color: #718096;
-  margin: 0;
-  font-size: 0.875rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0.25rem 0;
 }
 
-.variant {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  background: #e2e8f0;
-  color: #4a5568;
+.specs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.spec {
+  font-size: 0.85rem;
+  padding: 0.25rem 0.75rem;
+  background: white;
+  border: 1px solid #e2e8f0;
   border-radius: 4px;
-  font-size: 0.75rem;
-  margin: 0.25rem 0.5rem 0.25rem 0;
+  color: #4a5568;
 }
 
 .itemQuantity {
-  color: #4a5568;
+  margin-top: 0.5rem;
   font-weight: 500;
+  color: #4a5568;
 }
 
 .loading, .error, .empty {
@@ -224,7 +249,16 @@
 @media (max-width: 640px) {
   .orderHeader {
     flex-direction: column;
-    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .orderInfo {
+    width: 100%;
+  }
+  
+  .orderDate,
+  .totalItems {
+    margin: 0.25rem 0;
   }
 
   .status {
@@ -242,13 +276,20 @@
   }
 
   .item {
-    grid-template-columns: 50px 1fr;
+    flex-direction: column;
   }
 
-  .itemQuantity {
-    grid-column: 1 / -1;
-    text-align: right;
-    padding-top: 0.5rem;
+  .itemImage {
+    width: 100%;
+    height: 200px;
+  }
+
+  .itemDetails {
+    text-align: center;
+  }
+
+  .specs {
+    justify-content: center;
   }
 
   .headerRight {
@@ -445,4 +486,51 @@
 .cancelButton:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.statusSelect {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,..."); /* 添加下拉箭头 */
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  padding-right: 2rem;
+  transition: all 0.3s ease;
+}
+
+.statusSelect:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.statusSelect.pending {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.statusSelect.processing {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.statusSelect.completed {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+.statusSelect.cancelled {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+@media (max-width: 640px) {
+  .statusSelect {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
 } 

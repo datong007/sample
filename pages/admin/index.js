@@ -1,28 +1,40 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Link from 'next/link'
 import styles from '../../styles/Admin.module.css'
 
-export default function AdminHome() {
+export default function AdminPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
   useEffect(() => {
-    // 检查是否有管理员token
-    const checkAuth = async () => {
-      try {
-        const res = await fetch('/api/admin/check-auth')
-        if (!res.ok) {
-          router.push('/admin/login')
-        }
-      } catch (error) {
-        console.error('认证检查失败:', error)
-        router.push('/admin/login')
-      }
-    }
-
     checkAuth()
-  }, [router])
+  }, [])
+
+  const checkAuth = async () => {
+    try {
+      const response = await fetch('/api/auth/check')
+      if (!response.ok) {
+        throw new Error('未登录')
+      }
+      setIsAuthenticated(true)
+    } catch (error) {
+      console.error('验证失败:', error)
+      router.push('/admin/login')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return <div>加载中...</div>
+  }
+
+  if (!isAuthenticated) {
+    return null
+  }
 
   return (
     <div className={styles.container}>
