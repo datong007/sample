@@ -92,36 +92,50 @@
   font-size: 0.9rem;
 }
 
+.statusSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
 .statusSelect {
-  padding: 0.5rem;
-  border-radius: 6px;
-  border: 1px solid #e2e8f0;
-  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
   cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' viewBox='0 0 24 24' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+  transition: all 0.3s ease;
+}
+
+.statusSelect:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(159, 122, 234, 0.1);
 }
 
 .statusSelect.pending {
-  background: #fef3c7;
+  background-color: #fef3c7;
   color: #d97706;
-  border-color: #fbbf24;
 }
 
 .statusSelect.processing {
-  background: #e0f2fe;
+  background-color: #e0f2fe;
   color: #0369a1;
-  border-color: #38bdf8;
 }
 
 .statusSelect.completed {
-  background: #dcfce7;
+  background-color: #dcfce7;
   color: #15803d;
-  border-color: #4ade80;
 }
 
 .statusSelect.cancelled {
-  background: #fee2e2;
+  background-color: #fee2e2;
   color: #b91c1c;
-  border-color: #f87171;
 }
 
 .contactInfo {
@@ -227,6 +241,25 @@
   color: #4a5568;
 }
 
+.statusLabel {
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.statusLabel.cancelled {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* 已取消订单卡片的特殊样式 */
+.orderCard:has(.cancelled) {
+  opacity: 0.8;
+  background: #f8fafc;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
@@ -243,6 +276,7 @@
 
   .statusSelect {
     width: 100%;
+    text-align: center;
   }
 
   .item {

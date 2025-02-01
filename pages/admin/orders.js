@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import AdminLayout from '../../components/AdminLayout'
 import styles from '../../styles/AdminOrders.module.css'
+import { ORDER_STATUS, STATUS_MAP } from '../../constants/orderStatus'
 
 export default function AdminOrders() {
   const [orders, setOrders] = useState([])
@@ -11,10 +12,10 @@ export default function AdminOrders() {
 
   const statusOptions = {
     all: '全部',
-    pending: '待处理',
-    processing: '处理中',
-    completed: '已完成',
-    cancelled: '已取消'
+    [ORDER_STATUS.PENDING]: STATUS_MAP[ORDER_STATUS.PENDING].text,
+    [ORDER_STATUS.PROCESSING]: STATUS_MAP[ORDER_STATUS.PROCESSING].text,
+    [ORDER_STATUS.COMPLETED]: STATUS_MAP[ORDER_STATUS.COMPLETED].text,
+    [ORDER_STATUS.CANCELLED]: STATUS_MAP[ORDER_STATUS.CANCELLED].text
   }
 
   useEffect(() => {
@@ -38,9 +39,44 @@ export default function AdminOrders() {
     }
   }
 
-  const handleStatusChange = async (orderId, newStatus) => {
+  // 获取可用的下一个状态选项
+  const getAvailableStatuses = (currentStatus) => {
+    switch (currentStatus) {
+      case ORDER_STATUS.PENDING:
+        return [
+          ORDER_STATUS.PENDING,
+          ORDER_STATUS.PROCESSING,
+          ORDER_STATUS.COMPLETED
+        ]
+      case ORDER_STATUS.PROCESSING:
+        return [
+          ORDER_STATUS.PROCESSING,
+          ORDER_STATUS.COMPLETED
+        ]
+      case ORDER_STATUS.COMPLETED:
+        return [ORDER_STATUS.COMPLETED]
+      case ORDER_STATUS.CANCELLED:
+        return [ORDER_STATUS.CANCELLED]
+      default:
+        return [ORDER_STATUS.PENDING]
+    }
+  }
+
+  const handleStatusChange = async (orderNumber, newStatus, currentStatus) => {
+    // 如果订单已取消或已完成，则不允许修改状态
+    if (currentStatus === ORDER_STATUS.CANCELLED || currentStatus === ORDER_STATUS.COMPLETED) {
+      return
+    }
+
+    // 验证状态流转是否合法
+    const availableStatuses = getAvailableStatuses(currentStatus)
+    if (!availableStatuses.includes(newStatus)) {
+      alert('不允许的状态变更')
+      return
+    }
+
     try {
-      const response = await fetch(`/api/orders/${orderId}`, {
+      const response = await fetch(`/api/orders/${orderNumber}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -52,8 +88,20 @@ export default function AdminOrders() {
         throw new Error('更新状态失败')
       }
 
-      // 刷新订单列表
-      fetchOrders()
+      // 更新本地状态
+      setOrders(prevOrders => 
+        prevOrders.map(order => 
+          order.orderNumber === orderNumber 
+            ? { ...order, status: newStatus }
+            : order
+        )
+      )
+
+      // 广播状态更新事件
+      const event = new CustomEvent('orderStatusChanged', {
+        detail: { orderNumber, status: newStatus }
+      })
+      window.dispatchEvent(event)
     } catch (error) {
       console.error('更新状态失败:', error)
       alert('更新状态失败，请重试')
@@ -124,15 +172,25 @@ export default function AdminOrders() {
                     </p>
                   </div>
                   <div className={styles.statusSection}>
-                    <select
-                      value={order.status}
-                      onChange={(e) => handleStatusChange(order.orderNumber, e.target.value)}
-                      className={`${styles.statusSelect} ${styles[order.status]}`}
-                    >
-                      {Object.entries(statusOptions).filter(([key]) => key !== 'all').map(([value, label]) => (
-                        <option key={value} value={value}>{label}</option>
-                      ))}
-                    </select>
+                    {order.status === ORDER_STATUS.CANCELLED || order.status === ORDER_STATUS.COMPLETED ? (
+                      // 已取消或已完成订单显示状态标签
+                      <div className={`${styles.statusLabel} ${styles[order.status]}`}>
+                        {STATUS_MAP[order.status].text}
+                      </div>
+                    ) : (
+                      // 其他状态显示下拉选择框
+                      <select
+                        value={order.status || ORDER_STATUS.PENDING}
+                        onChange={(e) => handleStatusChange(order.orderNumber, e.target.value, order.status)}
+                        className={`${styles.statusSelect} ${styles[STATUS_MAP[order.status]?.class || STATUS_MAP[ORDER_STATUS.PENDING].class]}`}
+                      >
+                        {getAvailableStatuses(order.status).map(status => (
+                          <option key={status} value={status}>
+                            {STATUS_MAP[status].text}
+                          </option>
+                        ))}
+                      </select>
+                    )}
                   </div>
                 </div>
 

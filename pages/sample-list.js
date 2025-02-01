@@ -6,6 +6,7 @@ import styles from '../styles/SampleList.module.css'
 import OrderHistory from '../components/OrderHistory'
 import SpecsDisplay from '../components/SpecsDisplay'
 import { getCurrentStock } from '../lib/db'
+import { ORDER_STATUS } from '../constants/orderStatus'
 
 // 更新国际区号数据
 const countryPhoneCodes = [
@@ -262,14 +263,33 @@ export default function SampleList() {
   const [phoneCode, setPhoneCode] = useState('86')
   const [orders, setOrders] = useState([])
   const [showHistory, setShowHistory] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // 从 localStorage 加载历史订单
   useEffect(() => {
-    const savedOrders = localStorage.getItem('orderHistory')
-    if (savedOrders) {
-      setOrders(JSON.parse(savedOrders))
-    }
+    fetchOrders()
   }, [])
+
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch('/api/orders')
+      if (!response.ok) {
+        throw new Error('获取订单失败')
+      }
+      const data = await response.json()
+      // 确保每个订单都有状态，默认为待处理
+      const ordersWithStatus = data.orders.map(order => ({
+        ...order,
+        status: order.status || ORDER_STATUS.PENDING
+      }))
+      setOrders(ordersWithStatus)
+    } catch (error) {
+      console.error('获取订单失败:', error)
+      setError('获取订单失败，请重试')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // 保存订单到历史记录
   const saveToHistory = (order) => {
@@ -455,7 +475,16 @@ export default function SampleList() {
         </div>
 
         {showHistory ? (
-          <OrderHistory orders={orders} />
+          <div className={styles.historySection}>
+            <h2>历史订单</h2>
+            {loading ? (
+              <div className={styles.loading}>加载中...</div>
+            ) : error ? (
+              <div className={styles.error}>{error}</div>
+            ) : (
+              <OrderHistory orders={orders} />
+            )}
+          </div>
         ) : (
           <>
             {submitSuccess && (

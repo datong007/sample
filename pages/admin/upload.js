@@ -13,7 +13,13 @@ export default function Upload() {
     name: '',
     model: '',
     description: '',
-    category: ''
+    category: '',
+    specs: {
+      材料: '',
+      尺寸: '',
+      克重: '',
+      其他规格: ''  // 添加其他规格字段
+    }
   })
   const fileInputRef = useRef(null)
 
@@ -145,51 +151,68 @@ export default function Upload() {
     }))
   }
 
-  const handleSubmit = async () => {
-    setError('')  // 清除之前的错误
+  const handleSpecChange = (specName, value) => {
+    setProductInfo(prev => ({
+      ...prev,
+      specs: {
+        ...prev.specs,
+        [specName]: value
+      }
+    }))
+  }
 
-    if (!uploadedFiles.length) {
-      setError('请先上传图片')
+  const handleSubmit = async () => {
+    if (!productInfo.name || !productInfo.model || !productInfo.category) {
+      setError('请填写必填字段')
       return
     }
 
-    if (!productInfo.name || !productInfo.model || !productInfo.category) {
-      setError('请填写必填字段（产品名称、编号和类别）')
+    if (uploadedFiles.length === 0) {
+      setError('请至少上传一张图片')
       return
     }
 
     try {
-      setUploading(true)  // 添加提交状态
+      setUploading(true)
+      setError('')
+
+      // 准备提交的数据
+      const submitData = {
+        ...productInfo,
+        images: uploadedFiles,
+        image: uploadedFiles[0].url // 使用第一张图片作为主图
+      }
+
       const response = await fetch('/api/products', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...productInfo,
-          images: uploadedFiles,
-        }),
+        body: JSON.stringify(submitData),
       })
 
-      const result = await response.json()
-      
-      if (!response.ok || !result.success) {
-        throw new Error(result.message || '提交失败')
+      if (!response.ok) {
+        throw new Error('提交失败')
       }
 
-      // 提交成功
-      alert('产品添加成功！')
-      // 清空表单
-      setUploadedFiles([])
+      alert('产品添加成功')
+      // 重置表单
       setProductInfo({
         name: '',
         model: '',
         description: '',
-        category: ''
+        category: '',
+        specs: {
+          材料: '',
+          尺寸: '',
+          克重: '',
+          其他规格: ''
+        }
       })
+      setUploadedFiles([])
     } catch (error) {
       console.error('提交失败:', error)
-      setError(error.message || '提交失败，请重试')
+      setError('提交失败，请重试')
     } finally {
       setUploading(false)
     }
@@ -309,6 +332,48 @@ export default function Upload() {
                 placeholder="请输入产品描述"
                 rows="4"
               />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>规格信息</label>
+              <div className={styles.specsGrid}>
+                <div className={styles.specItem}>
+                  <label>材料</label>
+                  <input
+                    type="text"
+                    value={productInfo.specs.材料}
+                    onChange={(e) => handleSpecChange('材料', e.target.value)}
+                    placeholder="例如：棉、涤纶等"
+                  />
+                </div>
+                <div className={styles.specItem}>
+                  <label>尺寸</label>
+                  <input
+                    type="text"
+                    value={productInfo.specs.尺寸}
+                    onChange={(e) => handleSpecChange('尺寸', e.target.value)}
+                    placeholder="例如：150cm×100cm"
+                  />
+                </div>
+                <div className={styles.specItem}>
+                  <label>克重</label>
+                  <input
+                    type="text"
+                    value={productInfo.specs.克重}
+                    onChange={(e) => handleSpecChange('克重', e.target.value)}
+                    placeholder="例如：200g/㎡"
+                  />
+                </div>
+                <div className={styles.specItem}>
+                  <label>其他规格</label>
+                  <input
+                    type="text"
+                    value={productInfo.specs.其他规格}
+                    onChange={(e) => handleSpecChange('其他规格', e.target.value)}
+                    placeholder="其他规格信息"
+                  />
+                </div>
+              </div>
             </div>
 
             {error && (

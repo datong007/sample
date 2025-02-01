@@ -46,21 +46,27 @@
   border-radius: 9999px;
   font-size: 0.875rem;
   font-weight: 500;
+  margin-right: 1rem;
 }
 
-.status.pending {
+.pending {
   background: #fef3c7;
   color: #d97706;
 }
 
-.status.approved {
-  background: #def7ec;
-  color: #057a55;
+.processing {
+  background: #e0f2fe;
+  color: #0369a1;
 }
 
-.status.rejected {
-  background: #fde8e8;
-  color: #e02424;
+.completed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .orderSummary {
@@ -398,24 +404,45 @@
 
 .headerButtons {
   display: flex;
-  gap: 0.5rem;
   align-items: center;
+  gap: 0.5rem;
 }
 
 @media (max-width: 640px) {
-  .orderInfo {
+  .orderHeader {
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
   }
   
   .headerButtons {
-    flex-direction: column;
     width: 100%;
-    margin-top: 0.5rem;
+    flex-direction: column;
   }
 
-  .detailsButton {
+  .status, .cancelButton, .detailsButton {
     width: 100%;
-    justify-content: center;
+    text-align: center;
+    margin-right: 0;
   }
+}
+
+.cancelButton {
+  padding: 0.5rem 1rem;
+  background: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: #fecaca;
+  transform: translateY(-1px);
+}
+
+.cancelButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 } 
