@@ -48,9 +48,9 @@ export default function Products() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedVariants, setSelectedVariants] = useState({})
   const [addedItems, setAddedItems] = useState({})
-  const { cart, addToCart, stockLevels, setStockLevels } = useCart()
+  const { cart, addToCart, stockLevels, setStockLevels, getTotalQuantity } = useCart()
   const [quantities, setQuantities] = useState({})
-  const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0)
+  const totalQuantity = getTotalQuantity()
 
   useEffect(() => {
     async function fetchProducts() {
@@ -189,7 +189,7 @@ export default function Products() {
                   </button>
                 )}
               </div>
-              <Link href="/sample-list" className={styles.navButton}>
+              <Link href="/sample-list" className={`${styles.navButton} ${styles.cartButton}`}>
                 <svg {...cartIconProps} />
                 查看样品单
                 {totalQuantity > 0 && (

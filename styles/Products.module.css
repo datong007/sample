@@ -93,6 +93,11 @@
   transform: translateY(-1px);
 }
 
+.cartButton {
+  min-width: 140px;
+  justify-content: center;
+}
+
 .badge {
   position: absolute;
   top: -8px;
@@ -110,6 +115,18 @@
   padding: 0 6px;
   border: 2px solid white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  animation: badgePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes badgePop {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @media (max-width: 640px) {
@@ -117,6 +134,10 @@
     top: 0;
     right: 0;
     transform: translate(50%, -50%);
+  }
+  .cartButton {
+    width: 100%;
+    min-width: unset;
   }
 }
 
