@@ -40,5 +40,26 @@
       "克重": "20"
     },
     "updatedAt": "2025-02-01T03:42:27.022Z"
+  },
+  {
+    "id": "1738391607546",
+    "name": "rq",
+    "model": "c1",
+    "description": "",
+    "category": "功能面料",
+    "specs": {
+      "材料": "1",
+      "尺寸": "w",
+      "克重": "e",
+      "其他规格": "r"
+    },
+    "images": [
+      {
+        "url": "/images/products/9a1ee7db118f389701ab23f00.jpg",
+        "name": "SC-003.jpg"
+      }
+    ],
+    "image": "/images/products/9a1ee7db118f389701ab23f00.jpg",
+    "createdAt": "2025-02-01T06:33:27.546Z"
   }
 ]

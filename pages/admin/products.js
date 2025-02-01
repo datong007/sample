@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react'
+import Head from 'next/head'
+import Link from 'next/link'
 import AdminLayout from '../../components/AdminLayout'
 import styles from '../../styles/AdminProducts.module.css'
-import Link from 'next/link'
 
-export default function AdminProducts() {
+export default function Products() {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [selectedProducts, setSelectedProducts] = useState(new Set())
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
+  const [editingStock, setEditingStock] = useState(null)
+  const [stockValue, setStockValue] = useState('')
 
   const categories = [
     '全部',
@@ -21,6 +25,63 @@ export default function AdminProducts() {
     '时装面料',
     '其他'
   ]
+
+  const handleBatchDelete = async () => {
+    if (!confirm('确定要删除选中的产品吗？')) return
+
+    try {
+      const response = await fetch('/api/products/batch', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productIds: Array.from(selectedProducts)
+        }),
+      })
+
+      if (!response.ok) throw new Error('批量删除失败')
+
+      setProducts(prevProducts =>
+        prevProducts.filter(product => !selectedProducts.has(product.id))
+      )
+      setSelectedProducts(new Set())
+      alert('删除成功')
+    } catch (error) {
+      console.error('批量删除失败:', error)
+      alert('删除失败，请重试')
+    }
+  }
+
+  const handleStockUpdate = async (productId, newStock) => {
+    try {
+      const response = await fetch('/api/update-stock', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId,
+          stock: parseInt(newStock)
+        }),
+      })
+
+      if (!response.ok) throw new Error('更新库存失败')
+      
+      setProducts(prevProducts =>
+        prevProducts.map(product =>
+          product.id === productId
+            ? { ...product, stock: parseInt(newStock) }
+            : product
+        )
+      )
+      setEditingStock(null)
+      setStockValue('')
+    } catch (error) {
+      console.error('更新库存失败:', error)
+      alert('更新库存失败，请重试')
+    }
+  }
 
   useEffect(() => {
     fetchProducts()
@@ -66,26 +127,40 @@ export default function AdminProducts() {
     }
   }
 
-  const filteredProducts = products
-    .filter(product => {
-      const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory
-      if (!searchTerm) return matchesCategory
-      
-      const searchLower = searchTerm.toLowerCase()
-      return matchesCategory && (
-        product.name.toLowerCase().includes(searchLower) ||
-        product.model.toLowerCase().includes(searchLower)
-      )
-    })
+  const filteredProducts = products.filter(product => {
+    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory
+    if (!searchTerm) return matchesCategory
+    
+    const searchLower = searchTerm.toLowerCase()
+    return matchesCategory && (
+      product.name.toLowerCase().includes(searchLower) ||
+      product.model.toLowerCase().includes(searchLower)
+    )
+  })
 
   return (
     <AdminLayout>
       <div className={styles.container}>
+        <Head>
+          <title>产品管理</title>
+          <meta name="description" content="管理产品" />
+        </Head>
+
         <div className={styles.header}>
           <h1>产品管理</h1>
-          <Link href="/admin/upload" className={styles.addButton}>
-            添加产品
-          </Link>
+          <div className={styles.actions}>
+            <Link href="/admin/upload" className={styles.addButton}>
+              添加新产品
+            </Link>
+            {selectedProducts.size > 0 && (
+              <button 
+                className={styles.deleteButton}
+                onClick={handleBatchDelete}
+              >
+                删除选中 ({selectedProducts.size})
+              </button>
+            )}
+          </div>
         </div>
 
         <div className={styles.filters}>
@@ -127,44 +202,82 @@ export default function AdminProducts() {
           <div className={styles.productGrid}>
             {filteredProducts.map((product) => (
               <div key={product.id} className={styles.productCard}>
-                <div className={styles.imageContainer}>
-                  <img
-                    src={product.image || '/images/placeholder.jpg'}
+                <div className={styles.cardHeader}>
+                  <input
+                    type="checkbox"
+                    checked={selectedProducts.has(product.id)}
+                    onChange={(e) => {
+                      const newSelected = new Set(selectedProducts)
+                      if (e.target.checked) {
+                        newSelected.add(product.id)
+                      } else {
+                        newSelected.delete(product.id)
+                      }
+                      setSelectedProducts(newSelected)
+                    }}
+                    className={styles.checkbox}
+                  />
+                  <img 
+                    src={product.image || '/images/no-image.png'} 
                     alt={product.name}
                     className={styles.productImage}
-                    onError={(e) => {
-                      e.target.src = '/images/placeholder.jpg'
-                    }}
                   />
                 </div>
-                <div className={styles.productInfo}>
+
+                <div className={styles.cardBody}>
                   <h3>{product.name}</h3>
-                  <p className={styles.model}>编号: {product.model}</p>
-                  <p className={styles.category}>类别: {product.category}</p>
+                  <p className={styles.model}>型号：{product.model}</p>
+                  <p className={styles.category}>分类：{product.category}</p>
                   
-                  <div className={styles.specs}>
-                    {product.specs && Object.entries(product.specs).map(([key, value]) => (
-                      value && (
-                        <span key={key} className={styles.specItem}>
-                          {key}: {value}
-                        </span>
-                      )
-                    ))}
+                  <div className={styles.stockSection}>
+                    {editingStock === product.id ? (
+                      <div className={styles.stockEdit}>
+                        <input
+                          type="number"
+                          value={stockValue}
+                          onChange={(e) => setStockValue(e.target.value)}
+                          min="0"
+                          className={styles.stockInput}
+                        />
+                        <button
+                          onClick={() => handleStockUpdate(product.id, stockValue)}
+                          className={styles.saveButton}
+                        >
+                          保存
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingStock(null)
+                            setStockValue('')
+                          }}
+                          className={styles.cancelButton}
+                        >
+                          取消
+                        </button>
+                      </div>
+                    ) : (
+                      <div className={styles.stockDisplay}>
+                        <span>库存：{product.stock || 0}</span>
+                        <button
+                          onClick={() => {
+                            setEditingStock(product.id)
+                            setStockValue(product.stock?.toString() || '0')
+                          }}
+                          className={styles.editButton}
+                        >
+                          修改
+                        </button>
+                      </div>
+                    )}
                   </div>
 
-                  <div className={styles.actions}>
-                    <Link 
+                  <div className={styles.cardActions}>
+                    <Link
                       href={`/admin/products/${product.id}/edit`}
                       className={styles.editButton}
                     >
                       编辑
                     </Link>
-                    <button
-                      onClick={() => handleDelete(product.id)}
-                      className={styles.deleteButton}
-                    >
-                      删除
-                    </button>
                   </div>
                 </div>
               </div>
