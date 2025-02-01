@@ -11,18 +11,7 @@ const nextConfig = {
     },
     responseLimit: '10mb',
   },
-  async redirects() {
-    return [
-      {
-        source: '/cart',
-        destination: '/sample-list',
-        permanent: true,
-      },
-    ]
-  },
   env: {
-    MONGODB_URI: process.env.MONGODB_URI,
-    MONGODB_DB: process.env.MONGODB_DB,
     PORT: process.env.PORT || 3000,
     ADMIN_USERNAME: process.env.ADMIN_USERNAME,
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,

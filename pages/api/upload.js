@@ -8,20 +8,20 @@ export const config = {
   },
 }
 
+const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+
+// 确保上传目录存在
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true })
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' })
   }
 
   try {
-    const uploadDir = path.join(process.cwd(), 'public/images/products')
-    
-    // 确保上传目录存在
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true })
-    }
-
-    const form = new formidable.IncomingForm({
+    const form = formidable({
       uploadDir,
       keepExtensions: true,
       maxFileSize: 5 * 1024 * 1024, // 5MB
@@ -29,23 +29,21 @@ export default async function handler(req, res) {
 
     form.parse(req, (err, fields, files) => {
       if (err) {
-        console.error('Upload error:', err)
-        return res.status(500).json({ error: '上传失败' })
+        console.error('文件上传失败:', err)
+        return res.status(500).json({ message: '文件上传失败' })
       }
 
-      const uploadedFiles = Array.isArray(files.images) 
-        ? files.images 
-        : [files.images]
+      const file = files.file[0]
+      const fileName = file.newFilename
+      const fileUrl = `/uploads/${fileName}`
 
-      const fileUrls = uploadedFiles.map(file => ({
-        url: `/images/products/${path.basename(file.filepath)}`,
-        name: file.originalFilename || '未命名文件'
-      }))
-
-      res.status(200).json({ files: fileUrls })
+      res.status(200).json({ 
+        success: true, 
+        url: fileUrl 
+      })
     })
   } catch (error) {
-    console.error('Upload error:', error)
-    res.status(500).json({ error: '服务器错误' })
+    console.error('文件上传错误:', error)
+    res.status(500).json({ message: '文件上传失败' })
   }
 } 

@@ -1,6 +1,6 @@
-import { Component } from 'react'
+import React from 'react'
 
-export default class ErrorBoundary extends Component {
+class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props)
     this.state = { hasError: false }
@@ -11,7 +11,7 @@ export default class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('Error:', error, errorInfo)
+    console.error('错误边界捕获到错误:', error, errorInfo)
   }
 
   render() {
@@ -20,9 +20,10 @@ export default class ErrorBoundary extends Component {
         <div style={{ 
           padding: '2rem', 
           textAlign: 'center',
-          color: '#4a5568' 
+          color: '#e53e3e'
         }}>
-          <h2>抱歉，出现了一些问题</h2>
+          <h2>哎呀！出错了</h2>
+          <p>请刷新页面重试</p>
           <button
             onClick={() => window.location.reload()}
             style={{
@@ -42,4 +43,6 @@ export default class ErrorBoundary extends Component {
 
     return this.props.children
   }
-} 
+}
+
+export default ErrorBoundary 

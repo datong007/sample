@@ -1,3 +1,4 @@
+import ErrorBoundary from '../components/ErrorBoundary'
 import '../styles/globals.css'
 import { CartProvider } from '../context/CartContext'
 import { useEffect } from 'react'
@@ -20,9 +21,11 @@ function MyApp({ Component, pageProps }) {
   }, [])
 
   return (
-    <CartProvider>
-      <Component {...pageProps} />
-    </CartProvider>
+    <ErrorBoundary>
+      <CartProvider>
+        <Component {...pageProps} />
+      </CartProvider>
+    </ErrorBoundary>
   )
 }
 

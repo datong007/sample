@@ -1,32 +1,28 @@
 import styles from '../styles/Loading.module.css'
 import { useState, useEffect } from 'react'
 
-export default function Loading({ timeout = 10000 }) {
-  const [showError, setShowError] = useState(false)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowError(true)
-    }, timeout)
-
-    return () => clearTimeout(timer)
-  }, [timeout])
-
-  if (showError) {
-    return (
-      <div className={styles.errorContainer}>
-        <p>加载超时，请刷新页面重试</p>
-        <button onClick={() => window.location.reload()}>
-          刷新页面
-        </button>
-      </div>
-    )
-  }
-
+export default function Loading() {
   return (
-    <div className={styles.loadingContainer}>
-      <div className={styles.spinner}></div>
-      <p>加载中...</p>
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'rgba(255, 255, 255, 0.8)',
+      zIndex: 9999
+    }}>
+      <div style={{
+        padding: '2rem',
+        background: 'white',
+        borderRadius: '8px',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+      }}>
+        加载中...
+      </div>
     </div>
   )
 } 

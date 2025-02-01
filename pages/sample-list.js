@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext'
 import styles from '../styles/SampleList.module.css'
 import OrderHistory from '../components/OrderHistory'
 import SpecsDisplay from '../components/SpecsDisplay'
-import { getCurrentStock } from '../lib/db'
+import { getCurrentStock } from '../utils/stock'
 import { ORDER_STATUS } from '../constants/orderStatus'
 
 // 更新国际区号数据

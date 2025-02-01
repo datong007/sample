@@ -3,6 +3,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import AdminLayout from '../../components/AdminLayout'
 import styles from '../../styles/AdminProducts.module.css'
+import { updateStock } from '../../utils/stock'
 
 export default function Products() {
   const [products, setProducts] = useState([])
@@ -55,18 +56,11 @@ export default function Products() {
 
   const handleStockUpdate = async (productId, newStock) => {
     try {
-      const response = await fetch('/api/update-stock', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          productId,
-          stock: parseInt(newStock)
-        }),
-      })
-
-      if (!response.ok) throw new Error('更新库存失败')
+      const success = await updateStock(productId, parseInt(newStock))
+      
+      if (!success) {
+        throw new Error('更新库存失败')
+      }
       
       setProducts(prevProducts =>
         prevProducts.map(product =>
