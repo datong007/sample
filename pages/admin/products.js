@@ -141,6 +141,17 @@ export default function AdminProducts() {
                   <h3>{product.name}</h3>
                   <p className={styles.model}>编号: {product.model}</p>
                   <p className={styles.category}>类别: {product.category}</p>
+                  
+                  <div className={styles.specs}>
+                    {product.specs && Object.entries(product.specs).map(([key, value]) => (
+                      value && (
+                        <span key={key} className={styles.specItem}>
+                          {key}: {value}
+                        </span>
+                      )
+                    ))}
+                  </div>
+
                   <div className={styles.actions}>
                     <Link 
                       href={`/admin/products/${product.id}/edit`}

@@ -13,7 +13,11 @@ export default function EditProduct() {
     model: '',
     category: '',
     description: '',
-    specs: {}
+    specs: {
+      材料: '',
+      尺寸: '',
+      克重: ''
+    }
   })
   const [uploadedFiles, setUploadedFiles] = useState([])
 
@@ -42,7 +46,24 @@ export default function EditProduct() {
         throw new Error('获取产品信息失败')
       }
       const data = await response.json()
-      setProductData(data.product)
+      
+      const product = {
+        ...data.product,
+        specs: {
+          材料: '',
+          尺寸: '',
+          克重: '',
+          ...data.product.specs
+        }
+      }
+      
+      setProductData(product)
+      if (data.product.image) {
+        setUploadedFiles([{
+          url: data.product.image,
+          name: '主图'
+        }])
+      }
       if (data.product.images) {
         setUploadedFiles(data.product.images)
       }
@@ -102,21 +123,22 @@ export default function EditProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     
-    if (!productData.name || !productData.model || !productData.category) {
-      alert('请填写必填字段')
-      return
-    }
-
     try {
+      if (!productData.name || !productData.model || !productData.category) {
+        setError('请填写所有必填字段')
+        return
+      }
+
       const response = await fetch(`/api/products/${id}`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...productData,
-          images: uploadedFiles
-        })
+          images: uploadedFiles,
+          image: uploadedFiles[0]?.url || productData.image,
+        }),
       })
 
       if (!response.ok) {
@@ -125,9 +147,9 @@ export default function EditProduct() {
 
       alert('更新成功')
       router.push('/admin/products')
-    } catch (error) {
-      console.error('更新失败:', error)
-      alert('更新失败，请重试')
+    } catch (err) {
+      console.error('Error updating product:', err)
+      setError(err.message || '更新失败')
     }
   }
 
