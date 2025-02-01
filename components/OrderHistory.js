@@ -1,11 +1,32 @@
 import { useState, useEffect } from 'react'
+import { getOrders } from '../lib/db'
 import styles from '../styles/OrderHistory.module.css'
 import { ORDER_STATUS, STATUS_MAP } from '../constants/orderStatus'
 
-export default function OrderHistory({ orders: initialOrders }) {
-  const [orders, setOrders] = useState(initialOrders)
+export default function OrderHistory() {
+  const [orders, setOrders] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [expandedOrder, setExpandedOrder] = useState(null)
   const [cancellingOrders, setCancellingOrders] = useState(new Set())
+
+  useEffect(() => {
+    fetchOrders()
+  }, [])
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      const orderList = await getOrders()
+      setOrders(orderList)
+    } catch (error) {
+      console.error('获取订单历史失败:', error)
+      setError('获取订单历史失败，请刷新重试')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // 监听订单状态变化
   useEffect(() => {
@@ -63,27 +84,45 @@ export default function OrderHistory({ orders: initialOrders }) {
     }
   }
 
-  if (!orders || orders.length === 0) {
+  if (loading) {
+    return <div className={styles.loading}>加载中...</div>
+  }
+
+  if (error) {
     return (
-      <div className={styles.emptyHistory}>
-        <p>暂无历史订单</p>
+      <div className={styles.error}>
+        {error}
+        <button onClick={fetchOrders} className={styles.retryButton}>
+          重试
+        </button>
       </div>
     )
   }
 
+  if (orders.length === 0) {
+    return <div className={styles.empty}>暂无订单记录</div>
+  }
+
   return (
-    <div className={styles.historyContainer}>
-      {orders.map((order) => (
-        <div 
-          key={order.orderNumber} 
-          className={`${styles.orderCard} ${order.status === ORDER_STATUS.CANCELLED ? styles.cancelledOrder : ''}`}
-        >
-          <div className={styles.orderHeader}>
-            <div className={styles.orderInfo}>
-              <span className={styles.orderNumber}>订单号：{order.orderNumber}</span>
-              <span className={styles.orderDate}>
-                提交时间：{new Date(order.orderDate).toLocaleString()}
-              </span>
+    <div className={styles.container}>
+      <h2>历史订单</h2>
+      <div className={styles.orderList}>
+        {orders.map((order) => (
+          <div key={order.orderNumber} className={styles.orderItem}>
+            <div className={styles.orderHeader}>
+              <span>订单号: {order.orderNumber}</span>
+              <span>状态: {order.status}</span>
+            </div>
+            <div className={styles.orderDate}>
+              下单时间: {new Date(order.createdAt).toLocaleString()}
+            </div>
+            <div className={styles.items}>
+              {order.items.map((item, index) => (
+                <div key={index} className={styles.item}>
+                  <span>{item.name}</span>
+                  <span>x {item.quantity}</span>
+                </div>
+              ))}
             </div>
             <div className={styles.headerButtons}>
               <span className={`${styles.status} ${styles[STATUS_MAP[order.status]?.class || 'pending']}`}>
@@ -106,50 +145,51 @@ export default function OrderHistory({ orders: initialOrders }) {
               </button>
             </div>
           </div>
-
-          {expandedOrder === order.orderNumber && (
-            <div className={styles.orderDetails}>
-              <div className={styles.contactInfo}>
-                <h4>联系信息</h4>
-                <p><strong>联系人：</strong>{order.contactInfo.name}</p>
-                <p><strong>电话：</strong>{order.contactInfo.phone}</p>
-                <p><strong>邮箱：</strong>{order.contactInfo.email}</p>
-                {order.contactInfo.company && (
-                  <p><strong>公司：</strong>{order.contactInfo.company}</p>
-                )}
-                {order.contactInfo.notes && (
-                  <p><strong>备注：</strong>{order.contactInfo.notes}</p>
-                )}
-              </div>
-
-              <div className={styles.itemList}>
-                <h4>样品清单</h4>
-                {order.items.map((item, index) => (
-                  <div key={index} className={styles.item}>
-                    <div className={styles.itemImage}>
-                      <img src={item.image || '/images/no-image.png'} alt={item.name} />
-                    </div>
-                    <div className={styles.itemDetails}>
-                      <h5>{item.name}</h5>
-                      <p className={styles.itemModel}>型号：{item.model}</p>
-                      {item.specs && Object.keys(item.specs).length > 0 && (
-                        <div className={styles.specs}>
-                          {Object.entries(item.specs).map(([key, value]) => (
-                            value && <span key={key} className={styles.spec}>{key}: {value}</span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <div className={styles.itemQuantity}>
-                      数量：{item.quantity}
-                    </div>
-                  </div>
-                ))}
-              </div>
+        ))}
+      </div>
+      {expandedOrder && (
+        <div className={styles.expandedOrder}>
+          <div className={styles.orderDetails}>
+            <div className={styles.contactInfo}>
+              <h4>联系信息</h4>
+              <p><strong>联系人：</strong>{order.contactInfo.name}</p>
+              <p><strong>电话：</strong>{order.contactInfo.phone}</p>
+              <p><strong>邮箱：</strong>{order.contactInfo.email}</p>
+              {order.contactInfo.company && (
+                <p><strong>公司：</strong>{order.contactInfo.company}</p>
+              )}
+              {order.contactInfo.notes && (
+                <p><strong>备注：</strong>{order.contactInfo.notes}</p>
+              )}
             </div>
-          )}
+
+            <div className={styles.itemList}>
+              <h4>样品清单</h4>
+              {order.items.map((item, index) => (
+                <div key={index} className={styles.item}>
+                  <div className={styles.itemImage}>
+                    <img src={item.image || '/images/no-image.png'} alt={item.name} />
+                  </div>
+                  <div className={styles.itemDetails}>
+                    <h5>{item.name}</h5>
+                    <p className={styles.itemModel}>型号：{item.model}</p>
+                    {item.specs && Object.keys(item.specs).length > 0 && (
+                      <div className={styles.specs}>
+                        {Object.entries(item.specs).map(([key, value]) => (
+                          value && <span key={key} className={styles.spec}>{key}: {value}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className={styles.itemQuantity}>
+                    数量：{item.quantity}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      ))}
+      )}
     </div>
   )
 } 

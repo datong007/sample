@@ -17,7 +17,8 @@ const nextConfig = {
     ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
     JWT_SECRET: process.env.JWT_SECRET,
     UPLOAD_MAX_SIZE: process.env.UPLOAD_MAX_SIZE,
-    UPLOAD_DIR: process.env.UPLOAD_DIR
+    UPLOAD_DIR: process.env.UPLOAD_DIR,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL
   },
   output: 'standalone',
   serverOptions: {

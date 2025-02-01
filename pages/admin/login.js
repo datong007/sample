@@ -26,7 +26,7 @@ export default function AdminLogin() {
 
       if (res.ok) {
         // 登录成功，跳转到管理后台
-        router.push('/admin/orders')
+        router.push('/admin')
       } else {
         setError(data.message || '登录失败')
       }
@@ -40,7 +40,7 @@ export default function AdminLogin() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>管理员登录</title>
+        <title>管理员登录 - 样品管理系统</title>
         <meta name="description" content="管理员登录" />
       </Head>
 
@@ -57,6 +57,7 @@ export default function AdminLogin() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
+                placeholder="请输入用户名"
               />
             </div>
             <div className={styles.inputGroup}>
@@ -67,6 +68,7 @@ export default function AdminLogin() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                placeholder="请输入密码"
               />
             </div>
             <button

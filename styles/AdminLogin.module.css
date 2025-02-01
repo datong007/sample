@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f7fafc;
+  background: linear-gradient(135deg, #f6f8fd, #f0f4f8);
 }
 
 .main {
@@ -21,7 +21,7 @@
 
 .loginBox h1 {
   margin: 0 0 1.5rem;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   color: #2d3748;
   text-align: center;
 }
@@ -39,14 +39,14 @@
 }
 
 .inputGroup label {
-  color: #4a5568;
   font-size: 0.9rem;
+  color: #4a5568;
 }
 
 .inputGroup input {
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
@@ -62,14 +62,15 @@
   background: #9f7aea;
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.submitButton:hover {
+.submitButton:hover:not(:disabled) {
   background: #805ad5;
+  transform: translateY(-1px);
 }
 
 .submitButton:disabled {
@@ -81,7 +82,7 @@
   padding: 0.75rem;
   background: #fee2e2;
   color: #b91c1c;
-  border-radius: 6px;
+  border-radius: 4px;
   margin-bottom: 1rem;
   font-size: 0.9rem;
   text-align: center;

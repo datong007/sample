@@ -348,12 +348,11 @@ export default function SampleList() {
           ...contactInfo,
           phone: `+${phoneCode}-${contactInfo.phone}`
         },
-        status: 'pending',
         totalItems: cart.items.reduce((sum, item) => sum + item.quantity, 0)
       }
 
       // 提交订单
-      const orderResponse = await fetch('/api/orders', {
+      const orderResponse = await fetch('/api/orders/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -362,7 +361,8 @@ export default function SampleList() {
       })
 
       if (!orderResponse.ok) {
-        throw new Error('提交订单失败')
+        const errorData = await orderResponse.json()
+        throw new Error(errorData.message || '提交订单失败')
       }
 
       const result = await orderResponse.json()
@@ -394,8 +394,8 @@ export default function SampleList() {
         throw new Error(result.message || '提交失败')
       }
     } catch (error) {
-      console.error('提交失败:', error)
-      alert('提交失败，请重试')
+      console.error('提交订单失败:', error)
+      alert(error.message || '提交订单失败，请重试')
     } finally {
       setSubmitting(false)
     }

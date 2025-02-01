@@ -4,8 +4,6 @@ import { serialize } from 'cookie'
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'your-secret-key'
 )
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'your_username'
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'your_password'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -15,9 +13,14 @@ export default async function handler(req, res) {
   try {
     const { username, password } = req.body
 
-    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
-      // 使用 jose 生成 token
-      const token = await new SignJWT({ username, role: 'admin' })
+    // 验证用户名和密码
+    if (username === process.env.ADMIN_USERNAME && 
+        password === process.env.ADMIN_PASSWORD) {
+      // 生成 JWT token
+      const token = await new SignJWT({ 
+        username,
+        role: 'admin'
+      })
         .setProtectedHeader({ alg: 'HS256' })
         .setExpirationTime('24h')
         .sign(JWT_SECRET)
