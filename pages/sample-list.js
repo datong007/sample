@@ -320,6 +320,7 @@ export default function SampleList() {
           id: item.id,
           model: item.model,
           name: item.name,
+          image: item.image,
           quantity: item.quantity,
           specs: item.specs
         })),

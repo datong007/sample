@@ -1,1 +1,44 @@
-[]
+[
+  {
+    "id": "1738380133593",
+    "name": "饵托",
+    "model": "B102",
+    "description": "",
+    "category": "功能面料",
+    "images": [
+      {
+        "url": "/images/products/e04d8a57b1c9362f9e7047103.jpg",
+        "name": "SB-002.jpg"
+      }
+    ],
+    "image": "/images/products/e04d8a57b1c9362f9e7047103.jpg",
+    "createdAt": "2025-02-01T03:22:13.593Z",
+    "specs": {
+      "材料": "PP",
+      "尺寸": "12*45",
+      "克重": "15"
+    },
+    "updatedAt": "2025-02-01T03:22:47.487Z"
+  },
+  {
+    "id": "1738381309356",
+    "name": "钉子",
+    "model": "b103",
+    "description": "",
+    "category": "装饰面料",
+    "images": [
+      {
+        "url": "/images/products/e04d8a57b1c9362f9e7047104.jpg",
+        "name": "SD-004.jpg"
+      }
+    ],
+    "image": "/images/products/e04d8a57b1c9362f9e7047104.jpg",
+    "createdAt": "2025-02-01T03:41:49.356Z",
+    "specs": {
+      "材料": "PC",
+      "尺寸": "123",
+      "克重": "20"
+    },
+    "updatedAt": "2025-02-01T03:42:27.022Z"
+  }
+]

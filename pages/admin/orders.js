@@ -151,10 +151,14 @@ export default function AdminOrders() {
                     <div key={index} className={styles.item}>
                       <div className={styles.itemImage}>
                         <img
-                          src={item.image || '/images/placeholder.jpg'}
+                          src={item.image || '/images/no-image.png'}
                           alt={item.name}
+                          className={styles.productImage}
                           onError={(e) => {
-                            e.target.src = '/images/placeholder.jpg'
+                            e.target.onerror = null;
+                            e.target.src = '/images/no-image.png';
+                            e.target.style.backgroundColor = '#f7fafc';
+                            e.target.style.border = '1px solid #e2e8f0';
                           }}
                         />
                       </div>
