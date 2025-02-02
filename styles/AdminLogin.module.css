@@ -6,34 +6,20 @@
   background: linear-gradient(135deg, #f6f8fd, #f0f4f8);
 }
 
-.main {
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
-}
-
-.loginContainer {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f1f5f9;
-}
-
 .loginBox {
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
 }
 
-.loginBox h1 {
-  margin: 0 0 1.5rem;
-  color: #1e293b;
-  font-size: 1.5rem;
+.title {
   text-align: center;
+  color: #2d3748;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
 }
 
 .form {
@@ -43,55 +29,53 @@
 }
 
 .inputGroup {
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .inputGroup label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #475569;
+  color: #4a5568;
   font-size: 0.875rem;
 }
 
 .inputGroup input {
-  width: 100%;
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
   border-radius: 4px;
   font-size: 1rem;
-  transition: border-color 0.15s ease;
+  transition: all 0.2s;
 }
 
 .inputGroup input:focus {
   outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  border-color: #9f7aea;
+  box-shadow: 0 0 0 3px rgba(159, 122, 234, 0.1);
 }
 
-.loginButton {
-  width: 100%;
-  padding: 0.75rem;
-  background: #4f46e5;
+.submitButton {
+  background: #9f7aea;
   color: white;
+  padding: 0.75rem;
   border: none;
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s;
 }
 
-.loginButton:hover {
-  background: #4338ca;
+.submitButton:hover:not(:disabled) {
+  background: #805ad5;
 }
 
-.loginButton:disabled {
+.submitButton:disabled {
   opacity: 0.7;
   cursor: not-allowed;
 }
 
 .error {
-  background: #fee2e2;
-  color: #b91c1c;
+  background: #fed7d7;
+  color: #c53030;
   padding: 0.75rem;
   border-radius: 4px;
   margin-bottom: 1rem;

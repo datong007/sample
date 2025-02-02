@@ -1,66 +1,70 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
-import Head from 'next/head'
-import Link from 'next/link'
 import styles from '../../styles/Admin.module.css'
 
-export default function AdminPage() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [loading, setLoading] = useState(true)
+export default function AdminDashboard() {
   const router = useRouter()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('/api/auth/check')
-      if (!response.ok) {
-        throw new Error('未登录')
+    // 检查登录状态
+    const checkAuth = async () => {
+      try {
+        const res = await fetch('/api/auth/check')
+        if (!res.ok) {
+          throw new Error('Not authenticated')
+        }
+        setLoading(false)
+      } catch (error) {
+        router.push('/admin/login')
       }
-      setIsAuthenticated(true)
-    } catch (error) {
-      console.error('验证失败:', error)
-      router.push('/admin/login')
-    } finally {
-      setLoading(false)
     }
-  }
+
+    checkAuth()
+  }, [router])
 
   if (loading) {
-    return <div>加载中...</div>
-  }
-
-  if (!isAuthenticated) {
-    return null
+    return <div className={styles.loading}>Loading...</div>
   }
 
   return (
     <div className={styles.container}>
-      <Head>
-        <title>管理后台 - 样品管理系统</title>
-        <meta name="description" content="样品管理系统后台" />
-      </Head>
-
+      <header className={styles.header}>
+        <h1>后台管理系统</h1>
+        <nav className={styles.nav}>
+          <button 
+            onClick={() => router.push('/admin/products')}
+            className={styles.navButton}
+          >
+            产品管理
+          </button>
+          <button 
+            onClick={() => router.push('/admin/orders')}
+            className={styles.navButton}
+          >
+            订单管理
+          </button>
+          <button 
+            onClick={() => router.push('/admin/upload')}
+            className={styles.navButton}
+          >
+            产品上传
+          </button>
+          <button 
+            onClick={async () => {
+              await fetch('/api/auth/logout', { method: 'POST' })
+              router.push('/admin/login')
+            }}
+            className={styles.logoutButton}
+          >
+            退出登录
+          </button>
+        </nav>
+      </header>
       <main className={styles.main}>
-        <h1 className={styles.title}>样品管理系统后台</h1>
-
-        <div className={styles.grid}>
-          <Link href="/admin/products" className={styles.card}>
-            <h2>产品管理 &rarr;</h2>
-            <p>管理所有样品产品</p>
-          </Link>
-
-          <Link href="/admin/orders" className={styles.card}>
-            <h2>订单管理 &rarr;</h2>
-            <p>查看和处理样品申请</p>
-          </Link>
-
-          <Link href="/admin/upload" className={styles.card}>
-            <h2>图片上传 &rarr;</h2>
-            <p>上传和管理样品图片</p>
-          </Link>
+        <div className={styles.welcome}>
+          <h2>欢迎使用后台管理系统</h2>
+          <p>请选择上方功能进行操作</p>
         </div>
       </main>
     </div>

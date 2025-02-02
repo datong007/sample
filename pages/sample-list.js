@@ -247,6 +247,109 @@ const countryPhoneCodes = [
   { code: '619164', country: '圣诞岛' },
 ].sort((a, b) => a.country.localeCompare(b.country, 'zh-CN'))
 
+// 添加状态文本映射
+const STATUS_MAP = {
+  pending: { text: '待处理', color: '#f6ad55' },
+  processing: { text: '处理中', color: '#4299e1' },
+  shipped: { text: '已发货', color: '#48bb78' },
+  completed: { text: '已完成', color: '#38a169' },
+  cancelled: { text: '已取消', color: '#e53e3e' }
+}
+
+// 获取状态显示文本
+const getStatusText = (status) => {
+  return STATUS_MAP[status]?.text || status
+}
+
+// 添加订单详情组件
+const OrderDetails = ({ order, onClose }) => (
+  <div className={styles.orderDetailsModal}>
+    <div className={styles.modalContent}>
+      <div className={styles.modalHeader}>
+        <h2>订单详情</h2>
+        <button onClick={onClose} className={styles.closeButton}>×</button>
+      </div>
+
+      <div className={styles.orderBasicInfo}>
+        <div className={styles.infoRow}>
+          <div className={styles.infoItem}>
+            <label>订单号：</label>
+            <span>{order.orderNumber}</span>
+          </div>
+          <div className={styles.infoItem}>
+            <label>提交时间：</label>
+            <span>{new Date(order.createdAt).toLocaleString()}</span>
+          </div>
+          <div className={styles.infoItem}>
+            <label>样品总数：</label>
+            <span>{order.totalQuantity || order.items.reduce((sum, item) => sum + item.quantity, 0)} 件</span>
+          </div>
+          <div className={styles.infoItem}>
+            <label>状态：</label>
+            <span className={`${styles.status} ${styles[order.status]}`}>
+              {getStatusText(order.status)}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.contactInfo}>
+        <h3>联系信息</h3>
+        <div className={styles.infoGrid}>
+          <div className={styles.infoItem}>
+            <label>联系人：</label>
+            <span>{order.contactInfo.name}</span>
+          </div>
+          <div className={styles.infoItem}>
+            <label>电话：</label>
+            <span>{order.contactInfo.phone}</span>
+          </div>
+          <div className={styles.infoItem}>
+            <label>邮箱：</label>
+            <span>{order.contactInfo.email}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.sampleList}>
+        <h3>样品清单</h3>
+        <div className={styles.samples}>
+          {order.items.map((item, index) => (
+            <div key={index} className={styles.sampleItem}>
+              <div className={styles.sampleImage}>
+                <img 
+                  src={item.image || '/images/placeholder.jpg'} 
+                  alt={item.name}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/images/placeholder.jpg';
+                  }}
+                />
+              </div>
+              <div className={styles.sampleInfo}>
+                <h4>{item.name}</h4>
+                {item.model && <p className={styles.model}>型号：{item.model}</p>}
+                <div className={styles.specs}>
+                  {Object.entries(item.specs || {}).map(([key, value]) => (
+                    value && (
+                      <span key={key} className={styles.spec}>
+                        {key}: {value}
+                      </span>
+                    )
+                  ))}
+                </div>
+                <div className={styles.quantity}>
+                  数量：{item.quantity}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 export default function SampleList() {
   const { cart, removeFromCart, updateQuantity, clearCart, stockLevels } = useCart()
   const [orderNumber, setOrderNumber] = useState('')
@@ -265,31 +368,53 @@ export default function SampleList() {
   const [showHistory, setShowHistory] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [selectedOrder, setSelectedOrder] = useState(null)
 
   useEffect(() => {
-    fetchOrders()
-  }, [])
+    if (!showHistory) return;
+    fetchOrders();
+  }, [showHistory]);
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('/api/orders')
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch('/api/orders/list', {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+
       if (!response.ok) {
-        throw new Error('获取订单失败')
+        throw new Error('获取订单失败');
       }
-      const data = await response.json()
-      // 确保每个订单都有状态，默认为待处理
-      const ordersWithStatus = data.orders.map(order => ({
-        ...order,
-        status: order.status || ORDER_STATUS.PENDING
-      }))
-      setOrders(ordersWithStatus)
+
+      const data = await response.json();
+      
+      if (data.success) {
+        const validOrders = data.orders.filter(order => 
+          order && order.orderNumber && order.items && order.items.length > 0
+        );
+        
+        setOrders(validOrders);
+        setLoading(false);
+      } else {
+        throw new Error(data.message || '获取订单失败');
+      }
     } catch (error) {
-      console.error('获取订单失败:', error)
-      setError('获取订单失败，请重试')
+      console.error('获取订单失败:', error);
+      setError('获取订单失败，请刷新重试');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
+
+  const handleRetry = () => {
+    fetchOrders();
+  };
 
   // 保存订单到历史记录
   const saveToHistory = (order) => {
@@ -334,21 +459,23 @@ export default function SampleList() {
       
       // 准备订单数据
       const orderData = {
+        id: `order_${Date.now()}`,
         orderNumber,
-        orderDate: new Date().toISOString(),
         items: cart.items.map(item => ({
-          id: item.id,
-          model: item.model,
           name: item.name,
           image: item.image,
+          model: item.model,
           quantity: item.quantity,
-          specs: item.specs
+          specs: item.specs || {}
         })),
         contactInfo: {
           ...contactInfo,
           phone: `+${phoneCode}-${contactInfo.phone}`
         },
-        totalItems: cart.items.reduce((sum, item) => sum + item.quantity, 0)
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        totalQuantity: cart.items.reduce((sum, item) => sum + item.quantity, 0)
       }
 
       // 提交订单
@@ -367,25 +494,19 @@ export default function SampleList() {
 
       const result = await orderResponse.json()
       if (result.success) {
+        // 更新本地订单列表
+        setOrders(prevOrders => [orderData, ...prevOrders])
+        
+        // 更新状态
         setOrderNumber(orderNumber)
         setSubmitSuccess(true)
-        
-        // 保存到历史记录
-        saveToHistory({
-          ...orderData,
-          orderDate: new Date().toISOString()
-        })
-        
-        // 清空购物车
         clearCart()
         
         // 显示成功提示
         alert(`样品单提交成功！\n订单号：${orderNumber}`)
-        
-        // 滚动到顶部
         window.scrollTo({ top: 0, behavior: 'smooth' })
         
-        // 3秒后隐藏成功提示
+        // 延迟重置提交状态
         setTimeout(() => {
           setSubmitSuccess(false)
           setOrderNumber('')
@@ -403,6 +524,89 @@ export default function SampleList() {
 
   // 计算总数量
   const totalQuantity = cart.items.reduce((sum, item) => sum + item.quantity, 0)
+
+  // 修改订单卡片组件
+  const OrderCard = ({ order }) => (
+    <div className={styles.orderCard}>
+      <div className={styles.orderRow}>
+        <div className={styles.orderInfo}>
+          <div className={styles.orderNumber}>
+            订单号：{order.orderNumber}
+          </div>
+          <div className={styles.orderDate}>
+            提交时间：{new Date(order.createdAt).toLocaleString()}
+          </div>
+          <div className={styles.orderQuantity}>
+            样品总数：{order.totalQuantity || order.items.reduce((sum, item) => sum + item.quantity, 0)} 件
+          </div>
+        </div>
+        <div className={styles.orderActions}>
+          <span className={`${styles.status} ${styles[order.status]}`}>
+            {getStatusText(order.status)}
+          </span>
+          {order.status === 'pending' && (
+            <button 
+              onClick={() => handleCancelOrder(order.orderNumber)}
+              className={styles.cancelButton}
+            >
+              取消订单
+            </button>
+          )}
+          <button 
+            onClick={() => handleViewDetails(order.orderNumber)}
+            className={styles.detailsButton}
+          >
+            查看详情
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+
+  const handleCancelOrder = async (orderNumber) => {
+    if (!confirm('确定要取消这个订单吗？')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/orders/${orderNumber}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: 'cancelled' })
+      });
+
+      if (!response.ok) {
+        throw new Error('取消订单失败');
+      }
+
+      // 更新本地状态
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.orderNumber === orderNumber
+            ? { ...order, status: 'cancelled' }
+            : order
+        )
+      );
+    } catch (error) {
+      console.error('取消订单失败:', error);
+      alert('取消订单失败，请重试');
+    }
+  };
+
+  // 修改查看详情处理函数
+  const handleViewDetails = (orderNumber) => {
+    const order = orders.find(o => o.orderNumber === orderNumber);
+    if (order) {
+      setSelectedOrder(order);
+    }
+  };
+
+  // 添加关闭详情处理函数
+  const handleCloseDetails = () => {
+    setSelectedOrder(null);
+  };
 
   return (
     <div className={styles.container}>
@@ -477,12 +681,29 @@ export default function SampleList() {
         {showHistory ? (
           <div className={styles.historySection}>
             <h2>历史订单</h2>
-            {loading ? (
-              <div className={styles.loading}>加载中...</div>
-            ) : error ? (
-              <div className={styles.error}>{error}</div>
-            ) : (
-              <OrderHistory orders={orders} />
+            {loading && <div className={styles.loading}>加载中...</div>}
+            {error && (
+              <div className={styles.error}>
+                {error}
+                <button 
+                  onClick={handleRetry}
+                  className={styles.retryButton}
+                >
+                  重试
+                </button>
+              </div>
+            )}
+            {!loading && !error && orders.length === 0 && (
+              <div className={styles.emptyState}>
+                <p>暂无订单记录</p>
+              </div>
+            )}
+            {!loading && !error && orders.length > 0 && (
+              <div className={styles.orderList}>
+                {orders.map(order => (
+                  <OrderCard key={order.orderNumber} order={order} />
+                ))}
+              </div>
             )}
           </div>
         ) : (
@@ -716,6 +937,14 @@ export default function SampleList() {
           </>
         )}
       </main>
+
+      {/* 添加订单详情模态框 */}
+      {selectedOrder && (
+        <OrderDetails 
+          order={selectedOrder} 
+          onClose={handleCloseDetails} 
+        />
+      )}
     </div>
   )
 } 

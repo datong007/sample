@@ -8,28 +8,18 @@ const JWT_SECRET = new TextEncoder().encode(
 export async function middleware(request) {
   const { pathname } = request.nextUrl
 
-  // 保护管理后台路径和 API
-  if ((pathname.startsWith('/admin') && pathname !== '/admin/login') || 
-      pathname.startsWith('/api/admin/')) {
+  // 保护所有后台路径，除了登录页面
+  if (pathname.startsWith('/admin') && pathname !== '/admin/login') {
+    const token = request.cookies.get('auth')?.value
+
+    if (!token) {
+      return NextResponse.redirect(new URL('/admin/login', request.url))
+    }
+
     try {
-      const token = request.cookies.get('auth')?.value
-
-      if (!token) {
-        // 没有token，重定向到登录页
-        return NextResponse.redirect(new URL('/admin/login', request.url))
-      }
-
-      try {
-        // 验证token
-        await jwtVerify(token, JWT_SECRET)
-        return NextResponse.next()
-      } catch (error) {
-        // token无效，重定向到登录页
-        console.error('Token验证失败:', error)
-        return NextResponse.redirect(new URL('/admin/login', request.url))
-      }
+      await jwtVerify(token, JWT_SECRET)
+      return NextResponse.next()
     } catch (error) {
-      console.error('认证失败:', error)
       return NextResponse.redirect(new URL('/admin/login', request.url))
     }
   }
@@ -39,12 +29,5 @@ export async function middleware(request) {
 
 // 配置中间件匹配的路径
 export const config = {
-  matcher: [
-    /*
-     * 匹配所有以/admin开头的路径，
-     * 但是不匹配/admin/login和静态资源
-     */
-    '/admin/:path*',
-    '/api/admin/:path*'
-  ]
+  matcher: ['/admin/:path*']
 } 

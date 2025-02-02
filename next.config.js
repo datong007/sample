@@ -24,7 +24,16 @@ const nextConfig = {
   output: 'standalone',
   serverOptions: {
     port: parseInt(process.env.PORT || '3000', 10),
-  }
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        ws: false,
+      }
+    }
+    return config
+  },
 }
 
 module.exports = nextConfig 

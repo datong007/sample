@@ -8,11 +8,11 @@ export const config = {
   },
 }
 
-const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads')
 
 // 确保上传目录存在
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true })
+if (!fs.existsSync(UPLOAD_DIR)) {
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true })
 }
 
 export default async function handler(req, res) {
@@ -22,28 +22,34 @@ export default async function handler(req, res) {
 
   try {
     const form = formidable({
-      uploadDir,
+      uploadDir: UPLOAD_DIR,
       keepExtensions: true,
+      maxFiles: 5,
       maxFileSize: 5 * 1024 * 1024, // 5MB
     })
 
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        console.error('文件上传失败:', err)
-        return res.status(500).json({ message: '文件上传失败' })
-      }
+    const [fields, files] = await form.parse(req)
+    
+    const uploadedFiles = Array.isArray(files.files) 
+      ? files.files 
+      : [files.files]
 
-      const file = files.file[0]
-      const fileName = file.newFilename
-      const fileUrl = `/uploads/${fileName}`
+    const processedFiles = uploadedFiles.map(file => ({
+      name: file.originalFilename,
+      url: `/uploads/${path.basename(file.filepath)}`,
+      size: file.size,
+      type: file.mimetype
+    }))
 
-      res.status(200).json({ 
-        success: true, 
-        url: fileUrl 
-      })
+    res.status(200).json({ 
+      success: true, 
+      files: processedFiles 
     })
   } catch (error) {
-    console.error('文件上传错误:', error)
-    res.status(500).json({ message: '文件上传失败' })
+    console.error('上传失败:', error)
+    res.status(500).json({ 
+      success: false, 
+      message: '文件上传失败' 
+    })
   }
 } 

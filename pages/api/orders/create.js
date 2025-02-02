@@ -9,8 +9,9 @@ if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true })
 }
 
+// 初始化空的订单文件
 if (!fs.existsSync(ORDERS_FILE)) {
-  fs.writeFileSync(ORDERS_FILE, JSON.stringify({ orders: [] }))
+  fs.writeFileSync(ORDERS_FILE, JSON.stringify({ orders: [] }, null, 2))
 }
 
 export default async function handler(req, res) {
@@ -30,32 +31,31 @@ export default async function handler(req, res) {
     }
 
     // 读取现有订单
-    const data = fs.readFileSync(ORDERS_FILE, 'utf8')
-    const { orders } = JSON.parse(data)
-
-    // 生成订单号（如果没有）
-    if (!orderData.orderNumber) {
-      orderData.orderNumber = `SO${Date.now()}`
-    }
-
-    // 添加订单状态和时间戳
-    const newOrder = {
-      ...orderData,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+    let orders = []
+    try {
+      const data = fs.readFileSync(ORDERS_FILE, 'utf8')
+      const parsedData = JSON.parse(data)
+      orders = parsedData.orders || []
+    } catch (error) {
+      console.error('读取订单文件失败:', error)
+      // 如果文件损坏，创建新的
+      orders = []
     }
 
     // 添加新订单
-    orders.push(newOrder)
+    orders.push(orderData)
 
     // 保存到文件
-    fs.writeFileSync(ORDERS_FILE, JSON.stringify({ orders }, null, 2))
-
-    res.status(200).json({ 
-      success: true,
-      orderNumber: newOrder.orderNumber
-    })
+    try {
+      fs.writeFileSync(ORDERS_FILE, JSON.stringify({ orders }, null, 2))
+      res.status(200).json({ 
+        success: true,
+        orderNumber: orderData.orderNumber
+      })
+    } catch (error) {
+      console.error('保存订单文件失败:', error)
+      throw new Error('保存订单失败')
+    }
   } catch (error) {
     console.error('保存订单失败:', error)
     res.status(500).json({ 
