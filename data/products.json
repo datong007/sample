@@ -1,65 +1,25 @@
 [
   {
-    "id": "1738380133593",
-    "name": "饵托",
-    "model": "B102",
-    "description": "",
-    "category": "功能面料",
-    "images": [
-      {
-        "url": "/images/products/e04d8a57b1c9362f9e7047103.jpg",
-        "name": "SB-002.jpg"
-      }
-    ],
-    "image": "/images/products/e04d8a57b1c9362f9e7047103.jpg",
-    "createdAt": "2025-02-01T03:22:13.593Z",
+    "id": "1739631571196",
+    "name": "PEB1",
+    "model": "0001",
+    "description": "111",
+    "category": "专业版盒子",
     "specs": {
-      "材料": "PP",
-      "尺寸": "12*45",
-      "克重": "15"
-    },
-    "updatedAt": "2025-02-01T03:22:47.487Z"
-  },
-  {
-    "id": "1738381309356",
-    "name": "钉子",
-    "model": "b103",
-    "description": "",
-    "category": "装饰面料",
-    "images": [
-      {
-        "url": "/images/products/e04d8a57b1c9362f9e7047104.jpg",
-        "name": "SD-004.jpg"
-      }
-    ],
-    "image": "/images/products/e04d8a57b1c9362f9e7047104.jpg",
-    "createdAt": "2025-02-01T03:41:49.356Z",
-    "specs": {
-      "材料": "PC",
-      "尺寸": "123",
-      "克重": "20"
-    },
-    "updatedAt": "2025-02-01T03:42:27.022Z"
-  },
-  {
-    "id": "1738391607546",
-    "name": "rq",
-    "model": "c1",
-    "description": "",
-    "category": "功能面料",
-    "specs": {
-      "材料": "1",
-      "尺寸": "w",
-      "克重": "e",
-      "其他规格": "r"
+      "材料": "pp",
+      "尺寸": "12*22mm",
+      "克重": "",
+      "其他规格": ""
     },
     "images": [
       {
-        "url": "/images/products/9a1ee7db118f389701ab23f00.jpg",
-        "name": "SC-003.jpg"
+        "name": "PEB1.png",
+        "url": "/uploads/39c57244adb68854619b97f0f.png",
+        "size": 47672,
+        "type": "image/jpeg"
       }
     ],
-    "image": "/images/products/9a1ee7db118f389701ab23f00.jpg",
-    "createdAt": "2025-02-01T06:33:27.546Z"
+    "image": "/uploads/39c57244adb68854619b97f0f.png",
+    "createdAt": "2025-02-15T14:59:31.196Z"
   }
 ]

@@ -17,14 +17,14 @@ export default function Products() {
 
   const categories = [
     '全部',
-    '功能面料',
-    '运动面料',
-    '天然面料',
-    '装饰面料',
-    '环保面料',
-    '保暖面料',
-    '时装面料',
-    '其他'
+    '专业版盒子',
+    '喂食器',
+    '铅坠',
+    '塑料盒',
+    '塑料配件',
+    '鱼钩',
+    '金属配件',
+    '工具'
   ]
 
   const handleBatchDelete = async () => {
@@ -34,23 +34,26 @@ export default function Products() {
       const response = await fetch('/api/products/batch', {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({
           productIds: Array.from(selectedProducts)
         }),
       })
 
-      if (!response.ok) throw new Error('批量删除失败')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.message || '批量删除失败')
+      }
 
-      setProducts(prevProducts =>
-        prevProducts.filter(product => !selectedProducts.has(product.id))
-      )
+      // 刷新产品列表
+      await fetchProducts()
       setSelectedProducts(new Set())
       alert('删除成功')
     } catch (error) {
       console.error('批量删除失败:', error)
-      alert('删除失败，请重试')
+      alert(error.message || '删除失败，请重试')
     }
   }
 
@@ -105,19 +108,21 @@ export default function Products() {
 
     try {
       const response = await fetch(`/api/products/${productId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       })
 
       if (!response.ok) {
-        throw new Error('删除失败')
+        const errorData = await response.json()
+        throw new Error(errorData.message || '删除失败')
       }
 
       // 刷新产品列表
-      fetchProducts()
+      await fetchProducts()
       alert('删除成功')
     } catch (error) {
       console.error('删除失败:', error)
-      alert('删除失败，请重试')
+      alert(error.message || '删除失败，请重试')
     }
   }
 

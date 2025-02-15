@@ -24,14 +24,14 @@ export default function Upload() {
   const fileInputRef = useRef(null)
 
   const categories = [
-    '功能面料',
-    '运动面料',
-    '天然面料',
-    '装饰面料',
-    '环保面料',
-    '保暖面料',
-    '时装面料',
-    '其他'
+    '专业版盒子',
+    '喂食器',
+    '铅坠',
+    '塑料盒',
+    '塑料配件',
+    '鱼钩',
+    '金属配件',
+    '工具'
   ]
 
   const processImage = (file) => {
@@ -67,6 +67,10 @@ export default function Upload() {
         
         // 转换为Blob
         canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error('图片处理失败'))
+            return
+          }
           const newFile = new File([blob], file.name, {
             type: 'image/jpeg',
             lastModified: Date.now()
@@ -83,7 +87,32 @@ export default function Upload() {
   }
 
   const handleUpload = async (files) => {
-    if (!files.length) return
+    if (!files || !files.length) {
+      setError('请选择要上传的图片')
+      return
+    }
+
+    if (files.length > 5) {
+      setError('一次最多上传5张图片')
+      return
+    }
+
+    // 验证文件类型和大小
+    const invalidFiles = Array.from(files).filter(file => {
+      if (!file.type.startsWith('image/')) {
+        setError('只能上传图片文件')
+        return true
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setError('图片大小不能超过 5MB')
+        return true
+      }
+      return false
+    })
+
+    if (invalidFiles.length > 0) {
+      return
+    }
 
     setUploading(true)
     setError('')
@@ -104,15 +133,17 @@ export default function Upload() {
         body: formData,
       })
       
-      if (!res.ok) {
-        throw new Error('上传失败')
+      const data = await res.json()
+      
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || '上传失败')
       }
       
-      const data = await res.json()
       setUploadedFiles(prev => [...prev, ...data.files])
+      setError('')
     } catch (error) {
       console.error('上传失败:', error)
-      setError('上传失败，请重试')
+      setError(error.message || '上传失败，请重试')
     } finally {
       setUploading(false)
     }
@@ -120,23 +151,27 @@ export default function Upload() {
 
   const handleDrop = (e) => {
     e.preventDefault()
+    e.stopPropagation()
     setDragActive(false)
     const files = e.dataTransfer.files
-    if (files.length > 5) {
-      setError('一次最多上传5张图片')
-      return
-    }
     handleUpload(files)
   }
 
   const handleDragOver = (e) => {
     e.preventDefault()
+    e.stopPropagation()
     setDragActive(true)
   }
 
   const handleDragLeave = (e) => {
     e.preventDefault()
+    e.stopPropagation()
     setDragActive(false)
+  }
+
+  const handleFileInputChange = (e) => {
+    const files = e.target.files
+    handleUpload(files)
   }
 
   const handleClick = () => {
@@ -238,7 +273,7 @@ export default function Upload() {
 
           <div className={styles.uploadSection}>
             <div
-              className={`${styles.dropzone} ${dragActive ? styles.dragActive : ''}`}
+              className={`${styles.dropzone} ${dragActive ? styles.dragActive : ''} ${error ? styles.error : ''}`}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
@@ -247,16 +282,23 @@ export default function Upload() {
               <input
                 type="file"
                 ref={fileInputRef}
-                onChange={(e) => handleUpload(e.target.files)}
-                multiple
+                onChange={handleFileInputChange}
                 accept="image/*"
+                multiple
                 className={styles.fileInput}
               />
-              <div className={styles.dropzoneContent}>
-                <p>点击或拖拽上传图片</p>
-                <p className={styles.dropzoneHint}>最多5张，每张不超过5MB</p>
+              <div className={styles.uploadText}>
+                {uploading ? (
+                  <p>上传中...</p>
+                ) : (
+                  <>
+                    <p>点击或拖拽图片到此处上传</p>
+                    <p className={styles.uploadHint}>支持 JPG、PNG 格式，单个文件不超过 5MB</p>
+                  </>
+                )}
               </div>
             </div>
+            {error && <div className={styles.errorMessage}>{error}</div>}
 
             <div className={styles.productForm}>
               <h2>产品信息</h2>
@@ -357,12 +399,6 @@ export default function Upload() {
                   </div>
                 </div>
               </div>
-
-              {error && (
-                <div className={styles.error}>
-                  <p>{error}</p>
-                </div>
-              )}
 
               <button 
                 className={styles.submitButton}

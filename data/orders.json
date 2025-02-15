@@ -729,9 +729,9 @@
         "company": "",
         "notes": ""
       },
-      "status": "pending",
+      "status": "processing",
       "createdAt": "2025-02-01T15:28:03.883Z",
-      "updatedAt": "2025-02-01T15:28:03.883Z"
+      "updatedAt": "2025-02-15T14:52:32.215Z"
     },
     {
       "id": "order_1738423901379",
@@ -783,9 +783,9 @@
         "company": "",
         "notes": ""
       },
-      "status": "pending",
+      "status": "cancelled",
       "createdAt": "2025-02-01T15:32:41.380Z",
-      "updatedAt": "2025-02-02T01:38:35.386Z"
+      "updatedAt": "2025-02-15T14:40:02.207Z"
     }
   ]
 }

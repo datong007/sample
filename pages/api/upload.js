@@ -21,18 +21,42 @@ export default async function handler(req, res) {
   }
 
   try {
-    const form = formidable({
+    const form = new formidable.IncomingForm({
       uploadDir: UPLOAD_DIR,
       keepExtensions: true,
       maxFiles: 5,
       maxFileSize: 5 * 1024 * 1024, // 5MB
+      multiples: true,
+      filter: function ({ mimetype }) {
+        // 只允许图片文件
+        return mimetype && mimetype.includes('image/')
+      },
     })
 
-    const [fields, files] = await form.parse(req)
+    const [fields, files] = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) reject(err)
+        resolve([fields, files])
+      })
+    })
     
-    const uploadedFiles = Array.isArray(files.files) 
-      ? files.files 
-      : [files.files]
+    if (!files || !files.images) {
+      return res.status(400).json({
+        success: false,
+        message: '没有找到上传的图片'
+      })
+    }
+
+    const uploadedFiles = Array.isArray(files.images) 
+      ? files.images 
+      : [files.images]
+
+    if (uploadedFiles.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: '请选择要上传的图片'
+      })
+    }
 
     const processedFiles = uploadedFiles.map(file => ({
       name: file.originalFilename,
@@ -47,9 +71,10 @@ export default async function handler(req, res) {
     })
   } catch (error) {
     console.error('上传失败:', error)
+    const errorMessage = error.message || '文件上传失败'
     res.status(500).json({ 
       success: false, 
-      message: '文件上传失败' 
+      message: errorMessage
     })
   }
 } 
