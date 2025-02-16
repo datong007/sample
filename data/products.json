@@ -1,9 +1,9 @@
 [
   {
-    "id": "1739671328434",
+    "id": "1739680491553",
     "name": "A2325C",
     "model": "A2325C",
-    "description": "·The design has 22 separate compartments of various sizesfor storing small items\n·Equipped with EVA material sponge.it can store multipletied rigs\n·Grey translucent compartment lid design,effective isolation from strong light, prolong the lifeof stored items\n·Equipped with 4 large and 4 small removablebaffles for adjusting the size and layout of themain compartment\n·Double switch clasp design,protection upgrademore firm",
+    "description": "",
     "category": "专业版盒子",
     "specs": {
       "材料": "PC+ABS",
@@ -14,12 +14,173 @@
     "images": [
       {
         "name": "PEB1.png",
-        "url": "/uploads/b3b6bc716bf92d26096b65c0a.png",
+        "url": "/uploads/62a52a75eb2f5d540622e8500.png",
         "size": 42888,
         "type": "image/jpeg"
       }
     ],
-    "image": "/uploads/b3b6bc716bf92d26096b65c0a.png",
-    "createdAt": "2025-02-16T02:02:08.434Z"
+    "image": "/uploads/62a52a75eb2f5d540622e8500.png",
+    "createdAt": "2025-02-16T04:34:51.553Z"
+  },
+  {
+    "id": "1739680569659",
+    "name": "ACCESSORY BOX",
+    "model": "AABO2",
+    "description": "",
+    "category": "塑料盒",
+    "specs": {
+      "材料": "",
+      "尺寸": "52x49x24mm",
+      "克重": "",
+      "其他规格": "2 COMPARTMENT"
+    },
+    "images": [
+      {
+        "name": "F1.png",
+        "url": "/uploads/62a52a75eb2f5d540622e8501.png",
+        "size": 40351,
+        "type": "image/jpeg"
+      }
+    ],
+    "image": "/uploads/62a52a75eb2f5d540622e8501.png",
+    "createdAt": "2025-02-16T04:36:09.659Z"
+  },
+  {
+    "id": "1739680650718",
+    "name": "DB301",
+    "model": "DB301",
+    "description": "",
+    "category": "塑料盒",
+    "specs": {
+      "材料": "PP",
+      "尺寸": "250x165x36mm",
+      "克重": "",
+      "其他规格": "5 ADJUSTABLE COMPARTMENTS"
+    },
+    "images": [
+      {
+        "name": "PB1.png",
+        "url": "/uploads/62a52a75eb2f5d540622e8502.png",
+        "size": 25583,
+        "type": "image/jpeg"
+      }
+    ],
+    "image": "/uploads/62a52a75eb2f5d540622e8502.png",
+    "createdAt": "2025-02-16T04:37:30.718Z"
+  },
+  {
+    "id": "1739680697661",
+    "name": "E164",
+    "model": "E164",
+    "description": "",
+    "category": "塑料配件",
+    "specs": {
+      "材料": "",
+      "尺寸": "63.5x52.5mm",
+      "克重": "",
+      "其他规格": ""
+    },
+    "images": [
+      {
+        "name": "PF1.png",
+        "url": "/uploads/62a52a75eb2f5d540622e8503.png",
+        "size": 59615,
+        "type": "image/jpeg"
+      }
+    ],
+    "image": "/uploads/62a52a75eb2f5d540622e8503.png",
+    "createdAt": "2025-02-16T04:38:17.661Z"
+  },
+  {
+    "id": "1739680780231",
+    "name": "F118",
+    "model": "F118",
+    "description": "",
+    "category": "金属配件",
+    "specs": {
+      "材料": "copper+stainless steel",
+      "尺寸": "26mm",
+      "克重": "",
+      "其他规格": "matte black"
+    },
+    "images": [
+      {
+        "name": "178ffafc52f9269f96e88621abdb8b9.png",
+        "url": "/uploads/62a52a75eb2f5d540622e8505.png",
+        "size": 19858,
+        "type": "image/jpeg"
+      }
+    ],
+    "image": "/uploads/62a52a75eb2f5d540622e8505.png",
+    "createdAt": "2025-02-16T04:39:40.231Z"
+  },
+  {
+    "id": "1739680828714",
+    "name": "LSRW725",
+    "model": "LSRW725",
+    "description": "",
+    "category": "工具",
+    "specs": {
+      "材料": "PVA",
+      "尺寸": "7000x25mm",
+      "克重": "",
+      "其他规格": ""
+    },
+    "images": [
+      {
+        "name": "T1.png",
+        "url": "/uploads/62a52a75eb2f5d540622e8506.png",
+        "size": 42755,
+        "type": "image/jpeg"
+      }
+    ],
+    "image": "/uploads/62a52a75eb2f5d540622e8506.png",
+    "createdAt": "2025-02-16T04:40:28.714Z"
+  },
+  {
+    "id": "1739680918854",
+    "name": "B104M",
+    "model": "B104M",
+    "description": "",
+    "category": "喂食器",
+    "specs": {
+      "材料": "Lead+PP",
+      "尺寸": "59x28mm",
+      "克重": "30g/40g/45g/50g",
+      "其他规格": ""
+    },
+    "images": [
+      {
+        "name": "LW1.png",
+        "url": "/uploads/62a52a75eb2f5d540622e8507.png",
+        "size": 39489,
+        "type": "image/jpeg"
+      }
+    ],
+    "image": "/uploads/62a52a75eb2f5d540622e8507.png",
+    "createdAt": "2025-02-16T04:41:58.854Z"
+  },
+  {
+    "id": "1739681025057",
+    "name": "L103",
+    "model": "L103",
+    "description": "",
+    "category": "铅坠",
+    "specs": {
+      "材料": "LEAD",
+      "尺寸": "",
+      "克重": "15g/30g",
+      "其他规格": ""
+    },
+    "images": [
+      {
+        "name": "4a8c381ef5c4c9b7aea1f3586c343f5.png",
+        "url": "/uploads/62a52a75eb2f5d540622e8508.png",
+        "size": 24418,
+        "type": "image/jpeg"
+      }
+    ],
+    "image": "/uploads/62a52a75eb2f5d540622e8508.png",
+    "createdAt": "2025-02-16T04:43:45.058Z"
   }
 ]

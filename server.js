@@ -15,7 +15,7 @@ const startServer = (port) => {
 
     server.on('error', (err) => {
       if (err.code === 'EADDRINUSE') {
-        console.log(`Port ${port} is in use, trying next port`)
+        console.log(`端口 ${port} 已被占用，尝试下一个端口`)
         resolve(false)
       } else {
         reject(err)
@@ -27,20 +27,33 @@ const startServer = (port) => {
         reject(err)
         return
       }
-      console.log(`> Ready on http://localhost:${port}`)
+      console.log(`> 服务器已启动: http://localhost:${port}`)
       resolve(true)
     })
   })
 }
 
-app.prepare().then(async () => {
-  const ports = [3000, 3001]
-  for (const port of ports) {
+const findAvailablePort = async (startPort, maxAttempts = 10) => {
+  for (let port = startPort; port < startPort + maxAttempts; port++) {
     try {
       const success = await startServer(port)
-      if (success) break
+      if (success) return true
     } catch (err) {
-      console.error(`Error starting server on port ${port}:`, err)
+      console.error(`启动端口 ${port} 失败:`, err.message)
     }
   }
-}) 
+  return false
+}
+
+app.prepare()
+  .then(async () => {
+    const success = await findAvailablePort(3000)
+    if (!success) {
+      console.error('无法找到可用端口，请检查端口占用情况或手动指定端口')
+      process.exit(1)
+    }
+  })
+  .catch((err) => {
+    console.error('启动服务器时发生错误:', err)
+    process.exit(1)
+  }) 
