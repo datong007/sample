@@ -1,0 +1,136 @@
+<%- include('../partials/header') %>
+
+<div class="container">
+  <h1>添加新产品</h1>
+  
+  <div class="upload-container">
+    <div class="upload-area">
+      <div class="upload-box" id="dropZone">
+        <p>点击或拖拽图片到此处上传</p>
+        <p>支持 JPG、PNG 格式，单个文件不超过 5MB</p>
+        <input type="file" id="fileInput" style="display: none" accept=".jpg,.png" multiple>
+      </div>
+    </div>
+    
+    <div class="preview-area">
+      <h3>已上传图片</h3>
+      <div class="preview-grid" id="previewGrid">
+        <% if (locals.uploadedImages && uploadedImages.length > 0) { %>
+          <% uploadedImages.forEach(function(image) { %>
+            <div class="preview-item">
+              <img src="<%= image.url %>" alt="预览图片">
+              <button class="remove-btn" data-image-id="<%= image.id %>">×</button>
+            </div>
+          <% }); %>
+        <% } else { %>
+          <p>暂无已上传图片</p>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <form id="productForm" method="POST" action="/admin/products">
+    <!-- 其他产品信息表单字段 -->
+  </form>
+</div>
+
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const previewGrid = document.getElementById('previewGrid');
+
+// 点击上传区域触发文件选择
+dropZone.addEventListener('click', () => {
+  fileInput.click();
+});
+
+// 处理拖拽事件
+dropZone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropZone.style.borderColor = '#666';
+  dropZone.style.background = '#fafafa';
+});
+
+dropZone.addEventListener('dragleave', (e) => {
+  e.preventDefault();
+  dropZone.style.borderColor = '#ccc';
+  dropZone.style.background = '#fff';
+});
+
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.style.borderColor = '#ccc';
+  dropZone.style.background = '#fff';
+  
+  const files = e.dataTransfer.files;
+  handleFiles(files);
+});
+
+fileInput.addEventListener('change', (e) => {
+  handleFiles(e.target.files);
+});
+
+function handleFiles(files) {
+  Array.from(files).forEach(file => {
+    if (file.type.match('image.*')) {
+      uploadFile(file);
+    }
+  });
+}
+
+async function uploadFile(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const response = await fetch('/admin/upload', {
+      method: 'POST',
+      body: formData
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      addPreviewImage(data.url, data.id);
+    }
+  } catch (error) {
+    console.error('上传失败:', error);
+  }
+}
+
+function addPreviewImage(url, id) {
+  const previewItem = document.createElement('div');
+  previewItem.className = 'preview-item';
+  previewItem.innerHTML = `
+    <img src="${url}" alt="预览图片">
+    <button class="remove-btn" data-image-id="${id}">×</button>
+  `;
+  
+  if (previewGrid.firstChild.tagName === 'P') {
+    previewGrid.innerHTML = '';
+  }
+  previewGrid.appendChild(previewItem);
+}
+
+// 删除图片
+previewGrid.addEventListener('click', async (e) => {
+  if (e.target.classList.contains('remove-btn')) {
+    const imageId = e.target.dataset.imageId;
+    try {
+      const response = await fetch(`/admin/images/${imageId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        e.target.parentElement.remove();
+        if (previewGrid.children.length === 0) {
+          previewGrid.innerHTML = '<p>暂无已上传图片</p>';
+        }
+      }
+    } catch (error) {
+      console.error('删除失败:', error);
+    }
+  }
+});
+</script>
+
+<%- include('../partials/footer') %> 

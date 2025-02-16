@@ -1,0 +1,76 @@
+.upload-container {
+  display: flex;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.upload-area {
+  flex: 1;
+  min-width: 300px;
+}
+
+.preview-area {
+  flex: 1;
+  min-width: 300px;
+  padding: 1rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.upload-box {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.upload-box:hover {
+  border-color: #666;
+  background: #fafafa;
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.preview-item {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.preview-item .remove-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff4444;
+  font-weight: bold;
+}
+
+.preview-item .remove-btn:hover {
+  background: #fff;
+  transform: scale(1.1);
+} 

@@ -332,9 +332,10 @@ const OrderDetails = ({ order, onClose }) => (
                 <div className={styles.specs}>
                   {Object.entries(item.specs || {}).map(([key, value]) => (
                     value && (
-                      <span key={key} className={styles.spec}>
-                        {key}: {value}
-                      </span>
+                      <div key={key} className={styles.specItem}>
+                        <span className={styles.specLabel}>{key}:</span>
+                        <span className={styles.specValue}>{value}</span>
+                      </div>
                     )
                   ))}
                 </div>
@@ -738,7 +739,14 @@ export default function SampleList() {
                             <h4>{item.name}</h4>
                             <p className={styles.itemModel}>编号: {item.model}</p>
                             <div className={styles.specs}>
-                              <SpecsDisplay specs={item.specs} />
+                              {Object.entries(item.specs || {}).map(([key, value]) => (
+                                value && (
+                                  <div key={key} className={styles.specItem}>
+                                    <span className={styles.specLabel}>{key}:</span>
+                                    <span className={styles.specValue}>{value}</span>
+                                  </div>
+                                )
+                              ))}
                             </div>
                           </div>
                           <div className={styles.itemQuantity}>
@@ -812,10 +820,12 @@ export default function SampleList() {
                           <td className={styles.productName}>{item.name}</td>
                           <td className={styles.specs}>
                             {Object.entries(item.specs || {}).map(([key, value]) => (
-                              <div key={key} className={styles.specItem}>
-                                <span className={styles.specLabel}>{key}:</span>
-                                <span className={styles.specValue}>{value}</span>
-                              </div>
+                              value && (
+                                <div key={key} className={styles.specItem}>
+                                  <span className={styles.specLabel}>{key}:</span>
+                                  <span className={styles.specValue}>{value}</span>
+                                </div>
+                              )
                             ))}
                           </td>
                           <td className={styles.quantityControl}>

@@ -3,6 +3,8 @@ import Head from 'next/head'
 import Link from 'next/link'
 import styles from '../../styles/ProductDetail.module.css'
 import { useCart } from '../../context/CartContext'
+import ImagePreview from '../../components/ImagePreview'
+import { useState } from 'react'
 
 const products = [
   { 
@@ -55,6 +57,7 @@ const products = [
 export default function ProductDetail() {
   const router = useRouter()
   const { id } = router.query
+  const [selectedPreview, setSelectedPreview] = useState(null)
   const product = products.find(p => p.id === Number(id))
   const { addToCart } = useCart()
 
@@ -71,11 +74,19 @@ export default function ProductDetail() {
 
       <main className={styles.main}>
         <div className={styles.productDetail}>
-          <div className={styles.imageSection}>
+          <div 
+            className={styles.imageSection}
+            onClick={() => setSelectedPreview(product.image || '/images/placeholder.jpg')}
+          >
             <img 
-              src={product.image} 
+              src={product.image || '/images/placeholder.jpg'} 
               alt={product.name}
               className={styles.productImage}
+              onError={(e) => {
+                if (!e.target.src.includes('placeholder.jpg')) {
+                  e.target.src = '/images/placeholder.jpg';
+                }
+              }}
             />
           </div>
           
@@ -99,18 +110,14 @@ export default function ProductDetail() {
             <div className={styles.specSection}>
               <h2>规格参数</h2>
               <div className={styles.specGrid}>
-                <div className={styles.specItem}>
-                  <span className={styles.label}>材质</span>
-                  <span>{product.specs.material}</span>
-                </div>
-                <div className={styles.specItem}>
-                  <span className={styles.label}>尺寸</span>
-                  <span>{product.specs.size}</span>
-                </div>
-                <div className={styles.specItem}>
-                  <span className={styles.label}>重量</span>
-                  <span>{product.specs.weight}</span>
-                </div>
+                {Object.entries(product.specs || {}).map(([key, value]) => (
+                  value && (
+                    <div key={key} className={styles.specItem}>
+                      <span className={styles.label}>{key}</span>
+                      <span>{value}</span>
+                    </div>
+                  )
+                ))}
               </div>
             </div>
 
@@ -132,6 +139,13 @@ export default function ProductDetail() {
           </div>
         </div>
       </main>
+
+      {selectedPreview && (
+        <ImagePreview
+          image={selectedPreview}
+          onClose={() => setSelectedPreview(null)}
+        />
+      )}
     </div>
   )
 } 

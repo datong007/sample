@@ -6,6 +6,7 @@ import styles from '../styles/Products.module.css'
 import Loading from '../components/Loading'
 import CartBadge from '../components/CartBadge'
 import SpecsDisplay from '../components/SpecsDisplay'
+import ImagePreview from '../components/ImagePreview'
 
 const homeIconProps = {
   xmlns: "http://www.w3.org/2000/svg",
@@ -51,6 +52,7 @@ export default function Products() {
   const { cart, addToCart, getTotalQuantity } = useCart()
   const [quantities, setQuantities] = useState({})
   const totalQuantity = getTotalQuantity()
+  const [selectedPreview, setSelectedPreview] = useState(null)
 
   const fetchProducts = async () => {
     try {
@@ -147,8 +149,8 @@ export default function Products() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>样品展示</title>
-        <meta name="description" content="浏览可用的样品" />
+        <title>产品列表</title>
+        <meta name="description" content="浏览我们的产品列表" />
       </Head>
 
       <main className={styles.main}>
@@ -230,7 +232,10 @@ export default function Products() {
           <div className={styles.grid}>
             {filteredProducts.map((product) => (
               <div key={product.id} className={styles.card}>
-                <div className={styles.imageContainer}>
+                <div 
+                  className={styles.imageContainer}
+                  onClick={() => setSelectedPreview(product.image || '/images/placeholder.jpg')}
+                >
                   <img
                     src={product.image || '/images/placeholder.jpg'}
                     alt={product.name}
@@ -243,7 +248,7 @@ export default function Products() {
                   />
                 </div>
                 <div className={styles.content}>
-                  <h2 className={styles.productName}>{product.name}</h2>
+                  <h3 className={styles.productName}>{product.name}</h3>
                   <p className={styles.model}>编号: {product.model}</p>
                   <p className={styles.description}>{product.description}</p>
                   
@@ -251,9 +256,11 @@ export default function Products() {
                   <div className={styles.specsContainer}>
                     <div className={styles.specsList}>
                       {Object.entries(product.specs || {}).map(([key, value]) => (
-                        <span key={key} className={styles.specTag}>
-                          {key}: {value}
-                        </span>
+                        value && (
+                          <span key={key} className={styles.specTag}>
+                            {key}: {value}
+                          </span>
+                        )
                       ))}
                     </div>
                   </div>
@@ -301,6 +308,12 @@ export default function Products() {
           ↑
         </button>
       </main>
+      {selectedPreview && (
+        <ImagePreview
+          image={selectedPreview}
+          onClose={() => setSelectedPreview(null)}
+        />
+      )}
     </div>
   )
 }

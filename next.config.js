@@ -5,12 +5,6 @@ const nextConfig = {
     domains: ['localhost'],
     unoptimized: true
   },
-  api: {
-    bodyParser: {
-      sizeLimit: '10mb',
-    },
-    responseLimit: '10mb',
-  },
   env: {
     PORT: process.env.PORT || 3000,
     ADMIN_USERNAME: process.env.ADMIN_USERNAME,
@@ -22,9 +16,6 @@ const nextConfig = {
     NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL
   },
   output: 'standalone',
-  serverOptions: {
-    port: parseInt(process.env.PORT || '3000', 10),
-  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
@@ -33,7 +24,7 @@ const nextConfig = {
       }
     }
     return config
-  },
+  }
 }
 
 module.exports = nextConfig 

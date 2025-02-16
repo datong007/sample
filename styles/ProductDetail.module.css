@@ -26,12 +26,39 @@
   width: 100%;
   border-radius: 10px;
   overflow: hidden;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.imageSection::before {
+  content: '点击查看大图';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.imageSection:hover::before {
+  opacity: 1;
+}
+
+.imageSection:hover {
+  transform: scale(1.02);
 }
 
 .productImage {
   width: 100%;
   height: auto;
   object-fit: cover;
+  transition: transform 0.3s ease;
 }
 
 .infoSection {
