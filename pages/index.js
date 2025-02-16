@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import styles from '../styles/Home.module.css'
+import ChatButton from '../components/ChatButton'
 
 export default function Home() {
   return (
@@ -28,6 +29,8 @@ export default function Home() {
           </Link>
         </div>
       </main>
+
+      <ChatButton />
     </div>
   )
 } 
