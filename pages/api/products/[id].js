@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 
 const DATA_FILE = path.join(process.cwd(), 'data', 'products.json')
+const MAPPINGS_FILE = path.join(process.cwd(), 'data', 'product-mappings.json')
 
 // 读取产品数据
 const readProducts = () => {
@@ -31,69 +32,22 @@ const saveProducts = (products) => {
 export default async function handler(req, res) {
   const { id } = req.query
 
-  switch (req.method) {
-    case 'GET':
-      try {
-        const products = readProducts()
-        const product = products.find(p => p.id === id)
-        
-        if (!product) {
-          return res.status(404).json({ message: '产品不存在' })
-        }
-
-        res.status(200).json({ success: true, product })
-      } catch (error) {
-        res.status(500).json({ message: '获取产品信息失败' })
+  if (req.method === 'GET') {
+    try {
+      const mappings = JSON.parse(fs.readFileSync(MAPPINGS_FILE, 'utf8'))
+      const product = mappings.products.find(p => p.id === id)
+      
+      if (product) {
+        res.status(200).json(product)
+      } else {
+        res.status(404).json({ error: '产品未找到' })
       }
-      break
-
-    case 'PUT':
-      try {
-        const products = readProducts()
-        const index = products.findIndex(p => p.id === id)
-        
-        if (index === -1) {
-          return res.status(404).json({ message: '产品不存在' })
-        }
-
-        const updatedProduct = {
-          ...products[index],
-          ...req.body,
-          updatedAt: new Date().toISOString()
-        }
-
-        products[index] = updatedProduct
-
-        if (!saveProducts(products)) {
-          throw new Error('保存失败')
-        }
-
-        res.status(200).json({ success: true, product: updatedProduct })
-      } catch (error) {
-        res.status(500).json({ message: '更新产品失败' })
-      }
-      break
-
-    case 'DELETE':
-      try {
-        const products = readProducts()
-        const filteredProducts = products.filter(p => p.id !== id)
-        
-        if (products.length === filteredProducts.length) {
-          return res.status(404).json({ message: '产品不存在' })
-        }
-
-        if (!saveProducts(filteredProducts)) {
-          throw new Error('删除失败')
-        }
-
-        res.status(200).json({ success: true })
-      } catch (error) {
-        res.status(500).json({ message: '删除产品失败' })
-      }
-      break
-
-    default:
-      res.status(405).json({ message: 'Method not allowed' })
+    } catch (error) {
+      console.error('Error getting product:', error)
+      res.status(500).json({ error: '获取产品信息失败' })
+    }
+  } else {
+    res.setHeader('Allow', ['GET'])
+    res.status(405).end(`Method ${req.method} Not Allowed`)
   }
 } 
