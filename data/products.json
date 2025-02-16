@@ -1,1 +1,25 @@
-[]
+[
+  {
+    "id": "1739671328434",
+    "name": "A2325C",
+    "model": "A2325C",
+    "description": "·The design has 22 separate compartments of various sizesfor storing small items\n·Equipped with EVA material sponge.it can store multipletied rigs\n·Grey translucent compartment lid design,effective isolation from strong light, prolong the lifeof stored items\n·Equipped with 4 large and 4 small removablebaffles for adjusting the size and layout of themain compartment\n·Double switch clasp design,protection upgrademore firm",
+    "category": "专业版盒子",
+    "specs": {
+      "材料": "PC+ABS",
+      "尺寸": "325x220x75mm",
+      "克重": "",
+      "其他规格": ""
+    },
+    "images": [
+      {
+        "name": "PEB1.png",
+        "url": "/uploads/b3b6bc716bf92d26096b65c0a.png",
+        "size": 42888,
+        "type": "image/jpeg"
+      }
+    ],
+    "image": "/uploads/b3b6bc716bf92d26096b65c0a.png",
+    "createdAt": "2025-02-16T02:02:08.434Z"
+  }
+]
