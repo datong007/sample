@@ -3,24 +3,22 @@
     "id": "1739680491553",
     "name": "A2325C",
     "model": "A2325C",
-    "description": "",
     "category": "专业版盒子",
+    "description": "产品描述",
     "specs": {
       "材料": "PC+ABS",
       "尺寸": "325x220x75mm",
       "克重": "",
-      "其他规格": ""
+      "其他规格": "其他规格信息"
     },
     "images": [
       {
-        "name": "PEB1.png",
-        "url": "/uploads/62a52a75eb2f5d540622e8500.png",
-        "size": 42888,
-        "type": "image/jpeg"
+        "url": "/uploads/5a60e1164313a5e238c9f5c01.png",
+        "name": "PEB1.png"
       }
     ],
-    "image": "/uploads/62a52a75eb2f5d540622e8500.png",
-    "createdAt": "2025-02-16T04:34:51.553Z"
+    "image": "/uploads/5a60e1164313a5e238c9f5c01.png",
+    "detailUrl": "/products/1739680491553"
   },
   {
     "id": "1739680569659",
@@ -43,7 +41,8 @@
       }
     ],
     "image": "/uploads/62a52a75eb2f5d540622e8501.png",
-    "createdAt": "2025-02-16T04:36:09.659Z"
+    "createdAt": "2025-02-16T04:36:09.659Z",
+    "detailUrl": "/products/1739680569659"
   },
   {
     "id": "1739680650718",

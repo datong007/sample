@@ -178,7 +178,7 @@ export default function Products() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>产品列表</title>
+        <title>样品采购平台</title>
         <meta name="description" content="浏览我们的产品列表" />
       </Head>
 
@@ -321,13 +321,20 @@ export default function Products() {
                     </div>
                   </div>
 
-                  {/* 添加到样品单按钮 */}
-                  <button
-                    className={`${styles.addButton} ${addedItems[product.id] ? styles.added : ''}`}
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    {addedItems[product.id] ? '已添加' : '添加到样品单'}
-                  </button>
+                  <div className={styles.buttonGroup}>
+                    <Link
+                      href={`/products/${product.id}`}
+                      className={styles.detailButton}
+                    >
+                      查看详情
+                    </Link>
+                    <button
+                      className={`${styles.addButton} ${addedItems[product.id] ? styles.added : ''}`}
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      {addedItems[product.id] ? '已添加' : '添加到样品单'}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}

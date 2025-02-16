@@ -14,7 +14,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          欢迎使用样品管理系统
+          欢迎来到样品采购平台
         </h1>
 
         <div className={styles.grid}>

@@ -22,53 +22,64 @@ export default function EditProduct() {
   const [uploadedFiles, setUploadedFiles] = useState([])
 
   const categories = [
-    '功能面料',
-    '运动面料',
-    '天然面料',
-    '装饰面料',
-    '环保面料',
-    '保暖面料',
-    '时装面料',
-    '其他'
+    '专业版盒子',
+    '喂食器',
+    '铅坠',
+    '塑料盒',
+    '塑料配件',
+    '鱼钩',
+    '金属配件',
+    '工具'
   ]
 
   useEffect(() => {
     if (id) {
       fetchProduct()
+    } else {
+      setLoading(false)
     }
   }, [id])
 
   const fetchProduct = async () => {
     try {
       setError(null)
+      setLoading(true)
+      
+      if (!id) {
+        throw new Error('产品ID无效')
+      }
+
       const response = await fetch(`/api/products/${id}`)
+      
       if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('产品未找到')
+        }
         throw new Error('获取产品信息失败')
       }
-      const data = await response.json()
       
-      const product = {
-        ...data.product,
+      const product = await response.json()
+      
+      // 规范化产品数据
+      setProductData({
+        name: product.name || '',
+        model: product.model || '',
+        category: product.category || '',
+        description: product.description || '',
         specs: {
-          材料: '',
-          尺寸: '',
-          克重: '',
-          ...data.product.specs
+          材料: product.specs?.材料 || '',
+          尺寸: product.specs?.尺寸 || '',
+          克重: product.specs?.克重 || '',
+          其他规格: product.specs?.其他规格 || ''
         }
-      }
-      
-      setProductData(product)
-      if (data.product.image) {
-        setUploadedFiles([{
-          url: data.product.image,
-          name: '主图'
-        }])
-      }
-      if (data.product.images) {
-        setUploadedFiles(data.product.images)
+      })
+
+      // 处理图片数据
+      if (product.images && Array.isArray(product.images)) {
+        setUploadedFiles(product.images)
       }
     } catch (err) {
-      console.error('Error fetching product:', err)
+      console.error('获取产品信息失败:', err)
       setError(err.message)
     } finally {
       setLoading(false)
@@ -97,6 +108,19 @@ export default function EditProduct() {
     const files = Array.from(e.target.files)
     if (files.length === 0) return
 
+    // 验证文件大小和类型
+    const maxSize = 5 * 1024 * 1024 // 5MB
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+    
+    const invalidFiles = files.filter(file => 
+      file.size > maxSize || !validTypes.includes(file.type)
+    )
+
+    if (invalidFiles.length > 0) {
+      alert('部分文件上传失败：\n文件大小不能超过5MB，且必须是jpg、png、gif或webp格式')
+      return
+    }
+
     const formData = new FormData()
     files.forEach(file => {
       formData.append('images', file)
@@ -109,14 +133,20 @@ export default function EditProduct() {
       })
 
       if (!response.ok) {
-        throw new Error('上传失败')
+        const errorData = await response.json()
+        throw new Error(errorData.message || '上传失败')
       }
 
       const data = await response.json()
-      setUploadedFiles(prev => [...prev, ...data.files])
+      
+      // 更新上传文件列表
+      setUploadedFiles(prev => [...prev, ...data.files.map(file => ({
+        url: file.url,
+        name: file.name
+      }))])
     } catch (error) {
       console.error('上传失败:', error)
-      alert('上传失败，请重试')
+      alert(error.message || '上传失败，请重试')
     }
   }
 
@@ -124,9 +154,23 @@ export default function EditProduct() {
     e.preventDefault()
     
     try {
-      if (!productData.name || !productData.model || !productData.category) {
-        setError('请填写所有必填字段')
+      // 表单验证
+      const validationErrors = []
+      if (!productData.name) validationErrors.push('产品名称')
+      if (!productData.model) validationErrors.push('产品编号')
+      if (!productData.category) validationErrors.push('产品类别')
+      if (uploadedFiles.length === 0) validationErrors.push('产品图片')
+
+      if (validationErrors.length > 0) {
+        setError(`请填写以下必填字段: ${validationErrors.join(', ')}`)
         return
+      }
+
+      // 准备提交数据
+      const submitData = {
+        ...productData,
+        images: uploadedFiles,
+        image: uploadedFiles[0]?.url || null // 确保没有图片时设为 null
       }
 
       const response = await fetch(`/api/products/${id}`, {
@@ -134,22 +178,19 @@ export default function EditProduct() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...productData,
-          images: uploadedFiles,
-          image: uploadedFiles[0]?.url || productData.image,
-        }),
+        body: JSON.stringify(submitData),
       })
 
       if (!response.ok) {
-        throw new Error('更新失败')
+        const errorData = await response.json()
+        throw new Error(errorData.message || '更新失败')
       }
 
       alert('更新成功')
       router.push('/admin/products')
     } catch (err) {
       console.error('Error updating product:', err)
-      setError(err.message || '更新失败')
+      setError(err.message || '更新失败，请检查网络连接后重试')
     }
   }
 

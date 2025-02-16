@@ -319,18 +319,38 @@
 
 .addButton {
   width: 100%;
-  padding: 0.8rem;
-  background: #0070f3;
+  padding: 0.75rem;
+  background: #9f7aea;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 1rem;
-  transition: background 0.2s;
+  transition: all 0.3s ease;
 }
 
-.addButton:hover {
-  background: #0051b3;
+.buttonGroup {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.detailButton {
+  flex: 1;
+  padding: 0.75rem;
+  background: white;
+  color: #9f7aea;
+  border: 1px solid #9f7aea;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  text-align: center;
+}
+
+.detailButton:hover {
+  background: #f8f4ff;
 }
 
 .added {
