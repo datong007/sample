@@ -58,7 +58,7 @@
 }
 
 .message {
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   padding: 12px 16px;
   border-radius: 12px;
   max-width: 85%;
@@ -164,4 +164,53 @@
 .sendButton:disabled {
   background-color: #e0e0e0;
   cursor: not-allowed;
+}
+
+.recommendations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 0 16px;
+}
+
+.recommendButton {
+  background-color: #f0f7ff;
+  color: #1a73e8;
+  border: 1px solid #1a73e8;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.recommendButton:hover {
+  background-color: #1a73e8;
+  color: white;
+}
+
+.linkButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 16px;
+}
+
+.linkButton {
+  background-color: #f0f7ff;
+  color: #1a73e8;
+  border: 1px solid #1a73e8;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.linkButton:hover {
+  background-color: #1a73e8;
+  color: white;
 } 

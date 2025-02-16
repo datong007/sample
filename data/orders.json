@@ -893,10 +893,145 @@
         "company": "",
         "notes": ""
       },
-      "status": "pending",
+      "status": "cancelled",
       "createdAt": "2025-02-16T00:50:11.880Z",
-      "updatedAt": "2025-02-16T00:50:11.880Z",
+      "updatedAt": "2025-02-16T04:51:06.709Z",
       "totalQuantity": 2
+    },
+    {
+      "id": "order_1739681445415",
+      "orderNumber": "SO1739681445415",
+      "items": [
+        {
+          "name": "ACCESSORY BOX",
+          "image": "/uploads/62a52a75eb2f5d540622e8501.png",
+          "model": "AABO2",
+          "quantity": 1,
+          "specs": {
+            "材料": "",
+            "尺寸": "52x49x24mm",
+            "克重": "",
+            "其他规格": "2 COMPARTMENT"
+          }
+        },
+        {
+          "name": "DB301",
+          "image": "/uploads/62a52a75eb2f5d540622e8502.png",
+          "model": "DB301",
+          "quantity": 1,
+          "specs": {
+            "材料": "PP",
+            "尺寸": "250x165x36mm",
+            "克重": "",
+            "其他规格": "5 ADJUSTABLE COMPARTMENTS"
+          }
+        }
+      ],
+      "contactInfo": {
+        "name": "jason",
+        "email": "12@126.com",
+        "phone": "+86-1",
+        "company": "",
+        "notes": ""
+      },
+      "status": "completed",
+      "createdAt": "2025-02-16T04:50:45.415Z",
+      "updatedAt": "2025-02-16T04:52:31.953Z",
+      "totalQuantity": 2
+    },
+    {
+      "id": "order_1739681589136",
+      "orderNumber": "SO1739681589136",
+      "items": [
+        {
+          "name": "A2325C",
+          "image": "/uploads/62a52a75eb2f5d540622e8500.png",
+          "model": "A2325C",
+          "quantity": 3,
+          "specs": {
+            "材料": "PC+ABS",
+            "尺寸": "325x220x75mm",
+            "克重": "",
+            "其他规格": ""
+          }
+        },
+        {
+          "name": "E164",
+          "image": "/uploads/62a52a75eb2f5d540622e8503.png",
+          "model": "E164",
+          "quantity": 1,
+          "specs": {
+            "材料": "",
+            "尺寸": "63.5x52.5mm",
+            "克重": "",
+            "其他规格": ""
+          }
+        },
+        {
+          "name": "F118",
+          "image": "/uploads/62a52a75eb2f5d540622e8505.png",
+          "model": "F118",
+          "quantity": 3,
+          "specs": {
+            "材料": "copper+stainless steel",
+            "尺寸": "26mm",
+            "克重": "",
+            "其他规格": "matte black"
+          }
+        },
+        {
+          "name": "L103",
+          "image": "/uploads/62a52a75eb2f5d540622e8508.png",
+          "model": "L103",
+          "quantity": 2,
+          "specs": {
+            "材料": "LEAD",
+            "尺寸": "",
+            "克重": "15g/30g",
+            "其他规格": ""
+          }
+        }
+      ],
+      "contactInfo": {
+        "name": "qe",
+        "email": "q",
+        "phone": "+86-eq",
+        "company": "",
+        "notes": ""
+      },
+      "status": "pending",
+      "createdAt": "2025-02-16T04:53:09.136Z",
+      "updatedAt": "2025-02-16T04:53:09.136Z",
+      "totalQuantity": 9
+    },
+    {
+      "id": "order_1739681609779",
+      "orderNumber": "SO1739681609779",
+      "items": [
+        {
+          "name": "A2325C",
+          "image": "/uploads/62a52a75eb2f5d540622e8500.png",
+          "model": "A2325C",
+          "quantity": 4,
+          "specs": {
+            "材料": "PC+ABS",
+            "尺寸": "325x220x75mm",
+            "克重": "",
+            "其他规格": ""
+          }
+        }
+      ],
+      "contactInfo": {
+        "name": "1",
+        "email": "12",
+        "phone": "+86-23",
+        "company": "",
+        "notes": ""
+      },
+      "status": "pending",
+      "createdAt": "2025-02-16T04:53:29.779Z",
+      "updatedAt": "2025-02-16T04:53:29.779Z",
+      "totalQuantity": 4
     }
   ]
 }
