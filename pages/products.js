@@ -53,6 +53,7 @@ export default function Products() {
   const [quantities, setQuantities] = useState({})
   const totalQuantity = getTotalQuantity()
   const [selectedPreview, setSelectedPreview] = useState(null)
+  const [hash, setHash] = useState('')
 
   const fetchProducts = async () => {
     try {
@@ -74,6 +75,34 @@ export default function Products() {
   useEffect(() => {
     fetchProducts()
   }, [])
+
+  useEffect(() => {
+    // 初始化 hash
+    setHash(window.location.hash);
+
+    // 监听 hash 变化
+    const handleHashChange = () => {
+      setHash(window.location.hash);
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, []); // 依赖数组为空，只在组件挂载时运行
+
+  useEffect(() => {
+    if (hash) {
+      const productId = hash.replace('#product-', '');
+      const element = document.getElementById(`product-${productId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        // 使用新的类名
+        element.classList.add(styles.highlightAnimation);
+        setTimeout(() => {
+          element.classList.remove(styles.highlightAnimation);
+        }, 2000);
+      }
+    }
+  }, [hash]);
 
   const handleAddToCart = (product) => {
     const quantity = quantities[product.id] || 1
@@ -149,7 +178,7 @@ export default function Products() {
   return (
     <div className={styles.container}>
       <Head>
-        <title>产品列表</title>
+        <title>样品采购平台</title>
         <meta name="description" content="浏览我们的产品列表" />
       </Head>
 
@@ -231,7 +260,11 @@ export default function Products() {
         ) : (
           <div className={styles.grid}>
             {filteredProducts.map((product) => (
-              <div key={product.id} className={styles.card}>
+              <div 
+                key={product.id} 
+                id={`product-${product.id}`}
+                className={styles.card}
+              >
                 <div 
                   className={styles.imageContainer}
                   onClick={() => setSelectedPreview(product.image || '/images/placeholder.jpg')}
@@ -288,13 +321,20 @@ export default function Products() {
                     </div>
                   </div>
 
-                  {/* 添加到样品单按钮 */}
-                  <button
-                    className={`${styles.addButton} ${addedItems[product.id] ? styles.added : ''}`}
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    {addedItems[product.id] ? '已添加' : '添加到样品单'}
-                  </button>
+                  <div className={styles.buttonGroup}>
+                    <Link
+                      href={`/products/${product.id}`}
+                      className={styles.detailButton}
+                    >
+                      查看详情
+                    </Link>
+                    <button
+                      className={`${styles.addButton} ${addedItems[product.id] ? styles.added : ''}`}
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      {addedItems[product.id] ? '已添加' : '添加到样品单'}
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
