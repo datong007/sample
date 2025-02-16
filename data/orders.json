@@ -1061,6 +1061,76 @@
       "createdAt": "2025-02-16T07:29:15.965Z",
       "updatedAt": "2025-02-16T07:29:15.966Z",
       "totalQuantity": 2
+    },
+    {
+      "id": "order_1739696241935",
+      "orderNumber": "SO1739696241935",
+      "items": [
+        {
+          "name": "A2325C",
+          "image": "/uploads/5a60e1164313a5e238c9f5c01.png",
+          "model": "A2325C",
+          "quantity": 1,
+          "specs": {
+            "材料": "PC+ABS",
+            "尺寸": "325x220x75mm",
+            "克重": "",
+            "其他规格": "其他规格信息"
+          }
+        },
+        {
+          "name": "ACCESSORY BOX",
+          "image": "/uploads/62a52a75eb2f5d540622e8501.png",
+          "model": "AABO2",
+          "quantity": 2,
+          "specs": {
+            "材料": "",
+            "尺寸": "52x49x24mm",
+            "克重": "",
+            "其他规格": "2 COMPARTMENT"
+          }
+        }
+      ],
+      "contactInfo": {
+        "name": "1",
+        "email": "1",
+        "phone": "+86-1",
+        "company": "",
+        "notes": ""
+      },
+      "status": "cancelled",
+      "createdAt": "2025-02-16T08:57:21.936Z",
+      "updatedAt": "2025-02-16T08:58:19.425Z",
+      "totalQuantity": 3
+    },
+    {
+      "id": "order_1739696319964",
+      "orderNumber": "SO1739696319964",
+      "items": [
+        {
+          "name": "ACCESSORY BOX",
+          "image": "/uploads/62a52a75eb2f5d540622e8501.png",
+          "model": "AABO2",
+          "quantity": 1,
+          "specs": {
+            "材料": "",
+            "尺寸": "52x49x24mm",
+            "克重": "",
+            "其他规格": "2 COMPARTMENT"
+          }
+        }
+      ],
+      "contactInfo": {
+        "name": "2",
+        "email": "2",
+        "phone": "+86-2",
+        "company": "",
+        "notes": ""
+      },
+      "status": "processing",
+      "createdAt": "2025-02-16T08:58:39.965Z",
+      "updatedAt": "2025-02-16T08:58:52.449Z",
+      "totalQuantity": 1
     }
   ]
 }

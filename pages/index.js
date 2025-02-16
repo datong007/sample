@@ -6,6 +6,12 @@ import ChatButton from '../components/ChatButton'
 export default function Home() {
   return (
     <div className={styles.container}>
+      <div className={styles.techLines}></div>
+      <div className={styles.shootingStar}></div>
+      <div className={styles.shootingStar}></div>
+      <div className={styles.shootingStar}></div>
+      <div className={styles.shootingStar}></div>
+
       <Head>
         <title>样品管理系统</title>
         <meta name="description" content="浏览和管理样品" />

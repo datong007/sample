@@ -1,26 +1,5 @@
 [
   {
-    "id": "1739680491553",
-    "name": "A2325C",
-    "model": "A2325C",
-    "category": "专业版盒子",
-    "description": "产品描述",
-    "specs": {
-      "材料": "PC+ABS",
-      "尺寸": "325x220x75mm",
-      "克重": "",
-      "其他规格": "其他规格信息"
-    },
-    "images": [
-      {
-        "url": "/uploads/5a60e1164313a5e238c9f5c01.png",
-        "name": "PEB1.png"
-      }
-    ],
-    "image": "/uploads/5a60e1164313a5e238c9f5c01.png",
-    "detailUrl": "/products/1739680491553"
-  },
-  {
     "id": "1739680569659",
     "name": "ACCESSORY BOX",
     "model": "AABO2",
@@ -181,5 +160,28 @@
     ],
     "image": "/uploads/62a52a75eb2f5d540622e8508.png",
     "createdAt": "2025-02-16T04:43:45.058Z"
+  },
+  {
+    "id": "1739696470022",
+    "name": "1",
+    "model": "1",
+    "description": "1",
+    "category": "塑料配件",
+    "specs": {
+      "材料": "1",
+      "尺寸": "1",
+      "克重": "",
+      "其他规格": ""
+    },
+    "images": [
+      {
+        "name": "1.png",
+        "url": "/uploads/5a60e1164313a5e238c9f5c03.png",
+        "size": 40801,
+        "type": "image/jpeg"
+      }
+    ],
+    "image": "/uploads/5a60e1164313a5e238c9f5c03.png",
+    "createdAt": "2025-02-16T09:01:10.022Z"
   }
 ]
